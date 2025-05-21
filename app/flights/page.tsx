@@ -1,4 +1,4 @@
-import FlightsFilters from './_components/FlightsFilters';
+import FlightsFilters from '@/flights/_components/FlightsFilters';
 
 export default function FlightsPage() {
   return (

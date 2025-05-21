@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import GlobalProviders from "./_providers";
-import TopNavbar from "./_components/TopNavbar";
+import { TopNavbar } from '@/_components';
+import GlobalProviders from '@/_providers';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Pragma Flights",
+  title: 'Pragma Flights',
 };
 
 export default function RootLayout({
@@ -26,3 +26,4 @@ export default function RootLayout({
     </html>
   );
 }
+
