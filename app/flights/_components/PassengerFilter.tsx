@@ -1,11 +1,12 @@
-import { NumSelector } from '@/_components';
-import { getPassengerCount, PassengerAgeRange } from '@/_lib/flights-utils';
-import { PassengerType } from '@/_types';
 import {
+  Button,
+  NumSelector,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@radix-ui/react-popover';
+} from '@/_components';
+import { getPassengerCount, PassengerAgeRange } from '@/_lib/flights-utils';
+import { PassengerType } from '@/_types';
 import { ChevronDownIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -26,12 +27,14 @@ export default function PassengerFilter({ value, onChange }: Props) {
 
   return (
     <Popover onOpenChange={setOpen}>
-      <PopoverTrigger className="flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2">
-        <span className="text-sm font-medium">
-          <span className="inline-block min-w-4">{count}</span> Passenger
-          {count > 1 ? 's' : ''}
-        </span>
-        <ChevronDownIcon className="size-4" />
+      <PopoverTrigger asChild>
+        <Button className="flex items-center gap-4" variant="outline">
+          <span className="text-sm font-medium">
+            <span className="inline-block min-w-4">{count}</span> Passenger
+            {count > 1 ? 's' : ''}
+          </span>
+          <ChevronDownIcon className="size-4 opacity-50" />
+        </Button>
       </PopoverTrigger>
 
       <PopoverContent>

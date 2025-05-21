@@ -3,3 +3,9 @@ export enum PassengerType {
     CHILDREN = 'children',
     INFANTS = 'infants',
 }
+
+export interface Airport {
+    name: string;
+    code: string;
+    city: string;
+}
