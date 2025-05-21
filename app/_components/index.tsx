@@ -18,4 +18,5 @@ export {
 } from './popover';
 export { default as TopNavbar } from './TopNavbar';
 export { Input } from './input';
+export { default as VirtualList, type VirtualListRef } from './VirtualList';
 

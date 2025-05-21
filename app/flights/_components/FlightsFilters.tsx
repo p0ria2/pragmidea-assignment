@@ -18,13 +18,22 @@ import PassengerFilter from './PassengerFilter';
 import AirportFilter from './AirportFilter';
 import { useMemo } from 'react';
 
-const formSchema = z.object({
-  originLocationCode: z.string().length(3),
-  destinationLocationCode: z.string().length(3),
-  adults: z.number().min(1),
-  children: z.number().min(0),
-  infants: z.number().min(0),
-});
+const formSchema = z
+  .object({
+    originLocationCode: z
+      .string()
+      .length(3, { message: 'Invalid airport code' }),
+    destinationLocationCode: z
+      .string()
+      .length(3, { message: 'Invalid airport code' }),
+    adults: z.number().min(1),
+    children: z.number().min(0),
+    infants: z.number().min(0),
+  })
+  .refine((data) => data.originLocationCode !== data.destinationLocationCode, {
+    path: ['destinationLocationCode'],
+    message: 'Origin and destination cannot be the same',
+  });
 
 export default function FlightsFilters() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -72,6 +81,7 @@ export default function FlightsFilters() {
                       label="From"
                       value={field.value}
                       onChange={field.onChange}
+                      error={!!form.formState.errors.originLocationCode}
                     />
                   </FormControl>
                   <FormMessage />
@@ -89,6 +99,7 @@ export default function FlightsFilters() {
                       label="To"
                       value={field.value}
                       onChange={field.onChange}
+                      error={!!form.formState.errors.destinationLocationCode}
                     />
                   </FormControl>
                   <FormMessage />

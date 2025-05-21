@@ -13,7 +13,8 @@ export function getPassengerCount(value: Record<PassengerType, number>) {
 export function searchAirports(
     keyword: string,
     airports: Airport[],
-    maxResults = 10
+    from = 0,
+    limit = 10
 ): Airport[] {
     const q = keyword.trim().toLowerCase();
 
@@ -41,7 +42,7 @@ export function searchAirports(
         })
         .filter((item) => item.score > 0)
         .sort((a, b) => b.score - a.score)
-        .slice(0, maxResults);
+        .slice(from, from + limit);
 
     return scored.map((item) => item.airport);
 }
