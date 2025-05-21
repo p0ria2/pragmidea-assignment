@@ -1,3 +1,10 @@
+import FlightsFilters from './_components/FlightsFilters';
+
 export default function FlightsPage() {
-  return <div>Flights</div>;
+  return (
+    <div>
+      <FlightsFilters />
+    </div>
+  );
 }
+

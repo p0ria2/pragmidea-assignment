@@ -1,1 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #107ab0;
+  --color-on-primary: #ffffff;
+
+  --height-top-nav: 60px;
+}
+
