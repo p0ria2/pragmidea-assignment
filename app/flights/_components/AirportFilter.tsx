@@ -50,8 +50,8 @@ export default function AirportFilter({
   };
 
   const handleChange = (airport: Airport) => {
-    onChange(airport.code);
     setOpen(false);
+    onChange(airport.code);
   };
 
   useEffect(() => {
@@ -78,7 +78,9 @@ export default function AirportFilter({
         >
           <div className="flex items-center gap-3">
             <Label>{label}</Label>
-            <span className="opacity-50">
+            <span
+              className={cn(selectedAirport ? 'opacity-100' : 'opacity-50')}
+            >
               {selectedAirport
                 ? `${selectedAirport?.code} - ${selectedAirport?.name}`
                 : 'Select Airport'}
@@ -104,10 +106,10 @@ export default function AirportFilter({
 
         {isLoading ? (
           <div className="p-2 text-center text-sm opacity-50">Loading...</div>
-        ) : airports?.pages.length ? (
+        ) : airports?.pages.reduce((acc, page) => acc + page.data.length, 0) ? (
           <VirtualList
             ref={virtualizedListRef}
-            className="max-h-[100px]"
+            className="max-h-[300px]"
             loadMore={() => fetchNextPage()}
             isLoading={isFetchingNextPage}
           >

@@ -1,7 +1,7 @@
 'use client';
 
 import { Airport } from '@/_types';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, use, useEffect, useState } from 'react';
 
 interface AirportsContextType {
   airports: Airport[];
@@ -39,7 +39,7 @@ export function AirportsProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useAirports = () => {
-  const context = useContext(AirportsContext);
+  const context = use(AirportsContext);
   if (!context) {
     throw new Error('useAirports must be used within a AirportsProvider');
   }
