@@ -16,6 +16,9 @@ function makeQueryClient() {
           return false;
         },
       },
+      queries: {
+        refetchOnWindowFocus: false,
+      },
     },
   });
 }

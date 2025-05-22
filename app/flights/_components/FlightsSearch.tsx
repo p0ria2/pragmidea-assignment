@@ -10,7 +10,7 @@ import {
 } from '@/_components';
 import { toSearchParams } from '@/_lib/navigation-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isAfter, isToday, parseISO } from 'date-fns';
+import { isAfter, isSameDay, isToday, parseISO } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -58,7 +58,8 @@ const formSchema = flightsSearchSchema
     (data) =>
       !data.returnDate ||
       (data.departureDate
-        ? isAfter(parseISO(data.returnDate), parseISO(data.departureDate))
+        ? isSameDay(parseISO(data.returnDate), parseISO(data.departureDate)) ||
+          isAfter(parseISO(data.returnDate), parseISO(data.departureDate))
         : isToday(parseISO(data.returnDate))),
     {
       path: ['returnDate'],

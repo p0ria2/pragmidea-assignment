@@ -15,7 +15,7 @@ export class AmadeusApiProvider extends FlightApiProvider {
         adults: string;
         children?: string;
         infants?: string;
-    }): Promise<Flight[]> {
+    }, retry = true): Promise<Flight[]> {
         try {
             const params = new URLSearchParams({
                 ...opts,
@@ -30,6 +30,15 @@ export class AmadeusApiProvider extends FlightApiProvider {
                     "Authorization": `Bearer ${accessToken}`,
                 },
             });
+
+            if (response.status === 401) {
+                this.setCredentials(null);
+                if (retry) {
+                    return this.searchFlights(opts, false);
+                }
+
+                throw new Error("Unauthorized");
+            }
 
             const data = await response.json();
             return (data?.data || []).map((flight: any) =>
@@ -74,11 +83,11 @@ export class AmadeusApiProvider extends FlightApiProvider {
         }
     }
 
-    private setCredentials(token: { access_token: string, expires_in: number }) {
-        this.credentials = {
+    private setCredentials(token: { access_token: string, expires_in: number } | null) {
+        this.credentials = token ? {
             accessToken: token.access_token,
             expiresIn: new Date().getTime() + (token.expires_in - 10) * 1000,
-        };
+        } : null;
     }
 
     private isTokenValid() {
