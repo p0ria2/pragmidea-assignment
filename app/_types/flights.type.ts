@@ -1,4 +1,4 @@
-import { flightsFiltersSchema } from "@/flights/_components/FlightsFilters";
+import { flightsSearchSchema } from "@/flights/_components/FlightsSearch";
 import z from "zod";
 
 export enum PassengerType {
@@ -12,7 +12,7 @@ export interface Airport {
     code: string;
 }
 
-export type FlightsFilters = z.infer<typeof flightsFiltersSchema>;
+export type FlightsSearch = z.infer<typeof flightsSearchSchema>;
 
 export interface Flight {
     id: string;

@@ -15,12 +15,12 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
-import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
-import AirportFilter from './AirportFilter';
-import FlightDateFilter from './FlightDateFilter';
-import PassengerFilter from './PassengerFilter';
+import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
+import AirportSearch from './AirportSearch';
+import FlightDateSearch from './FlightDateSearch';
+import PassengerSearch from './PassengerSearch';
 
-export const flightsFiltersSchema = z.object({
+export const flightsSearchSchema = z.object({
   originLocationCode: z.string().length(3, { message: 'From is required' }),
   destinationLocationCode: z.string().length(3, { message: 'To is required' }),
   adults: z.number().min(1),
@@ -30,7 +30,7 @@ export const flightsFiltersSchema = z.object({
   returnDate: z.string().optional(),
 });
 
-const formSchema = flightsFiltersSchema
+const formSchema = flightsSearchSchema
   .refine((data) => data.originLocationCode !== data.destinationLocationCode, {
     path: ['destinationLocationCode'],
     message: 'Origin and destination cannot be the same',
@@ -66,18 +66,18 @@ const formSchema = flightsFiltersSchema
     }
   );
 
-export default function FlightsFilters() {
-  const { filters, isSubmitting } = useFlightsFilters();
+export default function FlightsSearch() {
+  const { search, isSubmitting } = useFlightsSearch();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      originLocationCode: filters.originLocationCode,
-      destinationLocationCode: filters.destinationLocationCode,
-      adults: filters.adults,
-      children: filters.children,
-      infants: filters.infants,
-      departureDate: filters.departureDate,
-      returnDate: filters.returnDate,
+      originLocationCode: search.originLocationCode,
+      destinationLocationCode: search.destinationLocationCode,
+      adults: search.adults,
+      children: search.children,
+      infants: search.infants,
+      departureDate: search.departureDate,
+      returnDate: search.returnDate,
     },
   });
 
@@ -95,8 +95,8 @@ export default function FlightsFilters() {
   }
 
   useEffect(() => {
-    form.reset(filters);
-  }, [filters]);
+    form.reset(search);
+  }, [search]);
 
   return (
     <div className="px-4 py-2">
@@ -106,7 +106,7 @@ export default function FlightsFilters() {
             className="flex flex-wrap gap-4"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <PassengerFilter
+            <PassengerSearch
               value={passengerCount}
               onChange={(passengerType, value) =>
                 form.setValue(passengerType, value)
@@ -119,7 +119,7 @@ export default function FlightsFilters() {
               render={({ field }) => (
                 <FormItem className="flex-[1_0_200px]">
                   <FormControl>
-                    <AirportFilter
+                    <AirportSearch
                       label="From"
                       value={field.value}
                       onChange={field.onChange}
@@ -137,7 +137,7 @@ export default function FlightsFilters() {
               render={({ field }) => (
                 <FormItem className="flex-[1_0_200px]">
                   <FormControl>
-                    <AirportFilter
+                    <AirportSearch
                       label="To"
                       value={field.value}
                       onChange={field.onChange}
@@ -155,7 +155,7 @@ export default function FlightsFilters() {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl>
-                    <FlightDateFilter
+                    <FlightDateSearch
                       label="Departure"
                       value={field.value}
                       onChange={field.onChange}
@@ -174,7 +174,7 @@ export default function FlightsFilters() {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl>
-                    <FlightDateFilter
+                    <FlightDateSearch
                       label="Return"
                       value={field.value}
                       onChange={field.onChange}

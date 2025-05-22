@@ -16,7 +16,7 @@ interface Props {
   onChange: (passengerType: PassengerType, value: number) => void;
 }
 
-export default function PassengerFilter({ value, onChange }: Props) {
+export default function PassengerSearch({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(getPassengerCount(value));
 

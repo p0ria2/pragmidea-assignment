@@ -29,7 +29,7 @@ export default function FlightCard({ flight }: Props) {
             </span>
 
             <span className="rounded-2xl bg-slate-200 px-2 py-1 text-xs font-semibold text-slate-800">
-              {flight.duration.replace('h', 'h ')}
+              {flight.duration}
             </span>
 
             {flight.stops.length ? (

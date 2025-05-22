@@ -21,7 +21,7 @@ interface Props {
   minDate?: Date;
 }
 
-export default function FlightDateFilter({
+export default function FlightDateSearch({
   label,
   value,
   onChange,

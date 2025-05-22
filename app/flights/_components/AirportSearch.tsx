@@ -21,7 +21,7 @@ interface Props {
   error?: boolean;
 }
 
-export default function AirportFilter({
+export default function AirportSearch({
   label,
   value,
   onChange,

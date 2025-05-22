@@ -1,21 +1,21 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
+import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
 import { toSearchParams } from '@/_lib/navigation-utils';
 import { Flight } from '@/_types';
 import { useEffect } from 'react';
 
 export default function useFlights() {
-  const { filters, isFiltersValid, setIsSubmitting } = useFlightsFilters();
+  const { search, isSearchValid, setIsSubmitting } = useFlightsSearch();
 
   const { isLoading, ...rest } = useQuery<Flight[]>({
-    queryKey: ['flights', filters],
+    queryKey: ['flights', search],
     queryFn: async () => {
-      const response = await fetch(`/flights/api?${toSearchParams(filters)}`);
+      const response = await fetch(`/flights/api?${toSearchParams(search)}`);
       return response.json();
     },
-    enabled: isFiltersValid,
+    enabled: isSearchValid,
   });
 
   useEffect(() => {
