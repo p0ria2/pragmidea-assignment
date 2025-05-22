@@ -13,7 +13,11 @@ export default function LoadingButton({
 }: Props) {
   return (
     <Button {...props} disabled={isLoading || props.disabled}>
-      {isLoading ? <Loader2 className="size-4 animate-spin" /> : children}
+      {isLoading ? (
+        <Loader2 className="size-4 animate-spin" data-testid="spinner" />
+      ) : (
+        children
+      )}
     </Button>
   );
 }
