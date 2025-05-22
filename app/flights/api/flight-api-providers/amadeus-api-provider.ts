@@ -2,6 +2,11 @@ import { Flight } from "@/_types";
 import { FlightApiProvider } from "@/_types";
 
 export class AmadeusApiProvider extends FlightApiProvider {
+    private credentials: {
+        accessToken: string;
+        expiresIn: number;
+    } | null = null;
+
     async searchFlights(opts: {
         originLocationCode: string;
         destinationLocationCode: string;
@@ -27,33 +32,9 @@ export class AmadeusApiProvider extends FlightApiProvider {
             });
 
             const data = await response.json();
-            return (data?.data || []).map((flight: any) => {
-                const itinerary = flight.itineraries[0];
-                const firstSegment = itinerary.segments[0];
-                const lastSegment = itinerary.segments[itinerary.segments.length - 1];
-                const duration = this.getFlightDuration(itinerary.duration);
-                const airline = data.dictionaries.carriers[firstSegment.carrierCode];
-                const departure = firstSegment.departure;
-                const arrival = lastSegment.arrival;
-                const price = flight.price.grandTotal;
-                const currency = flight.price.currency;
-
-                return {
-                    id: flight.id,
-                    duration,
-                    airline,
-                    departure: {
-                        at: departure.at,
-                        iata: departure.iataCode,
-                    },
-                    arrival: {
-                        at: arrival.at,
-                        iata: arrival.iataCode,
-                    },
-                    price,
-                    currency,
-                };
-            });
+            return (data?.data || []).map((flight: any) =>
+                this.convertToFlight(flight, data.dictionaries)
+            );
         } catch (error) {
             console.error("Error searching flights:", error);
             throw error;
@@ -61,6 +42,10 @@ export class AmadeusApiProvider extends FlightApiProvider {
     }
 
     private async getFlightsApiAccessToken() {
+        if (this.isTokenValid()) {
+            return this.credentials!.accessToken;
+        }
+
         try {
             const formData = new URLSearchParams();
             formData.append("grant_type", "client_credentials");
@@ -79,12 +64,53 @@ export class AmadeusApiProvider extends FlightApiProvider {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            return data.access_token;
+            const data = await response.json() as { access_token: string, expires_in: number };
+
+            this.setCredentials(data);
+            return this.credentials!.accessToken;
         } catch (error) {
             console.error("Error fetching access token:", error);
             throw error;
         }
+    }
+
+    private setCredentials(token: { access_token: string, expires_in: number }) {
+        this.credentials = {
+            accessToken: token.access_token,
+            expiresIn: new Date().getTime() + (token.expires_in - 10) * 1000,
+        };
+    }
+
+    private isTokenValid() {
+        return this.credentials && this.credentials.expiresIn > Date.now();
+    }
+
+    private convertToFlight(data: any, dictionaries: any): Flight {
+        const itinerary = data.itineraries[0];
+        const firstSegment = itinerary.segments[0];
+        const lastSegment = itinerary.segments[itinerary.segments.length - 1];
+        const duration = this.getFlightDuration(itinerary.duration);
+        const airline = dictionaries.carriers[firstSegment.carrierCode];
+        const departure = firstSegment.departure;
+        const arrival = lastSegment.arrival;
+        const price = data.price.grandTotal;
+        const currency = data.price.currency;
+
+        return {
+            id: data.id,
+            duration,
+            airline,
+            departure: {
+                at: departure.at,
+                iata: departure.iataCode,
+            },
+            arrival: {
+                at: arrival.at,
+                iata: arrival.iataCode,
+            },
+            price,
+            currency,
+        };
     }
 
     private getFlightDuration(duration: string): string {

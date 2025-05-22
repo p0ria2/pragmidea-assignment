@@ -18,6 +18,7 @@ interface Props {
   value?: string | null;
   onChange: (value: string) => void;
   error?: boolean;
+  minDate?: Date;
 }
 
 export default function FlightDateFilter({
@@ -25,6 +26,7 @@ export default function FlightDateFilter({
   value,
   onChange,
   error,
+  minDate,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -71,7 +73,7 @@ export default function FlightDateFilter({
           className="border-none!"
           value={value ? parseISO(value) : null}
           onChange={handleChange as any}
-          minDate={new Date()}
+          minDate={minDate}
         />
       </PopoverContent>
     </Popover>

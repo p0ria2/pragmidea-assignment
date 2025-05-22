@@ -53,6 +53,17 @@ const formSchema = flightsFiltersSchema
       path: ['returnDate'],
       message: 'Return date cannot be in the past',
     }
+  )
+  .refine(
+    (data) =>
+      !data.returnDate ||
+      (data.departureDate
+        ? isAfter(parseISO(data.returnDate), parseISO(data.departureDate))
+        : isToday(parseISO(data.returnDate))),
+    {
+      path: ['returnDate'],
+      message: 'Return date must be after departure date',
+    }
   );
 
 export default function FlightsFilters() {
@@ -69,6 +80,8 @@ export default function FlightsFilters() {
       returnDate: filters.returnDate,
     },
   });
+
+  const departureDate = form.watch('departureDate');
 
   const passengerCount = useMemo(() => {
     const { adults, children, infants } = form.getValues();
@@ -147,6 +160,7 @@ export default function FlightsFilters() {
                       value={field.value}
                       onChange={field.onChange}
                       error={!!form.formState.errors.departureDate}
+                      minDate={new Date()}
                     />
                   </FormControl>
                   <FormMessage />
@@ -165,6 +179,9 @@ export default function FlightsFilters() {
                       value={field.value}
                       onChange={field.onChange}
                       error={!!form.formState.errors.returnDate}
+                      minDate={
+                        departureDate ? parseISO(departureDate) : new Date()
+                      }
                     />
                   </FormControl>
                   <FormMessage />
