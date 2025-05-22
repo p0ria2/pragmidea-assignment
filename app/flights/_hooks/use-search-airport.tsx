@@ -43,7 +43,7 @@ export const useSearchAirport = ({ limit = 10 }: Props = {}) => {
   return {
     keyword,
     setKeyword,
-    data,
+    data: data?.pages.flatMap((page) => page.data) || [],
     allAirports: airportsMap,
     isLoading: isAirportsLoading,
     fetchNextPage,

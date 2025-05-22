@@ -3,7 +3,7 @@ import {
   isServer,
   QueryClient,
   QueryClientProvider,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
 function makeQueryClient() {
   return new QueryClient({
@@ -11,7 +11,7 @@ function makeQueryClient() {
       dehydrate: {
         shouldDehydrateQuery: (query) =>
           defaultShouldDehydrateQuery(query) ||
-          query.state.status === "pending",
+          query.state.status === 'pending',
         shouldRedactErrors: (error) => {
           return false;
         },
@@ -31,10 +31,15 @@ function getQueryClient() {
   }
 }
 
-export function QueryProvider({ children }: { children: React.ReactNode }) {
+export default function QueryProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const queryClient = getQueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
+

@@ -6,6 +6,7 @@ import {
   PopoverTrigger,
 } from '@/_components';
 import { getPassengerCount, PassengerAgeRange } from '@/_lib/flights-utils';
+import { capitalize } from '@/_lib/string-utils';
 import { PassengerType } from '@/_types';
 import { ChevronDownIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -45,7 +46,7 @@ export default function PassengerFilter({ value, onChange }: Props) {
               className="flex items-center justify-between gap-2"
             >
               <div className="flex flex-col gap-1">
-                {passengerType}
+                {capitalize(passengerType)}
                 <sub className="opacity-50">
                   {PassengerAgeRange[passengerType]}
                 </sub>

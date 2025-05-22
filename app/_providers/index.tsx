@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { QueryProvider } from "./QueryProvider";
+import QueryProvider from './QueryProvider';
 
 export default function GlobalProviders({
   children,
@@ -9,3 +9,4 @@ export default function GlobalProviders({
 }) {
   return <QueryProvider>{children}</QueryProvider>;
 }
+

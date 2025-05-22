@@ -1,34 +1,36 @@
 'use client';
 
 import {
-  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
+  LoadingButton,
 } from '@/_components';
+import { toSearchParams } from '@/_lib/navigation-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isAfter, isToday, parseISO } from 'date-fns';
-import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
 import AirportFilter from './AirportFilter';
 import FlightDateFilter from './FlightDateFilter';
 import PassengerFilter from './PassengerFilter';
 
-const formSchema = z
-  .object({
-    originLocationCode: z.string().length(3, { message: 'From is required' }),
-    destinationLocationCode: z
-      .string()
-      .length(3, { message: 'To is required' }),
-    adults: z.number().min(1),
-    children: z.number().min(0),
-    infants: z.number().min(0),
-    departureDate: z.string().min(1, { message: 'Departure date is required' }),
-    returnDate: z.string().nullable().optional(),
-  })
+export const flightsFiltersSchema = z.object({
+  originLocationCode: z.string().length(3, { message: 'From is required' }),
+  destinationLocationCode: z.string().length(3, { message: 'To is required' }),
+  adults: z.number().min(1),
+  children: z.number().min(0),
+  infants: z.number().min(0),
+  departureDate: z.string().min(1, { message: 'Departure date is required' }),
+  returnDate: z.string().optional(),
+});
+
+const formSchema = flightsFiltersSchema
   .refine((data) => data.originLocationCode !== data.destinationLocationCode, {
     path: ['destinationLocationCode'],
     message: 'Origin and destination cannot be the same',
@@ -54,16 +56,17 @@ const formSchema = z
   );
 
 export default function FlightsFilters() {
+  const { filters, isSubmitting } = useFlightsFilters();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      originLocationCode: '',
-      destinationLocationCode: '',
-      adults: 1,
-      children: 0,
-      infants: 0,
-      departureDate: '',
-      returnDate: null,
+      originLocationCode: filters.originLocationCode,
+      destinationLocationCode: filters.destinationLocationCode,
+      adults: filters.adults,
+      children: filters.children,
+      infants: filters.infants,
+      departureDate: filters.departureDate,
+      returnDate: filters.returnDate,
     },
   });
 
@@ -72,9 +75,15 @@ export default function FlightsFilters() {
     return { adults, children, infants };
   }, [form.watch('adults'), form.watch('children'), form.watch('infants')]);
 
+  const router = useRouter();
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    router.push(`/flights?${toSearchParams(values)}`);
   }
+
+  useEffect(() => {
+    form.reset(filters);
+  }, [filters]);
 
   return (
     <div className="px-4 py-2">
@@ -163,9 +172,14 @@ export default function FlightsFilters() {
               )}
             />
 
-            <Button className="w-full cursor-pointer" type="submit" size="lg">
+            <LoadingButton
+              className="w-full cursor-pointer"
+              type="submit"
+              size="lg"
+              isLoading={isSubmitting}
+            >
               Search
-            </Button>
+            </LoadingButton>
           </form>
         </Form>
       </div>

@@ -10,7 +10,11 @@ interface AirportsContextType {
 
 export const AirportsContext = createContext<AirportsContextType | null>(null);
 
-export function AirportsProvider({ children }: { children: React.ReactNode }) {
+export default function AirportsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 

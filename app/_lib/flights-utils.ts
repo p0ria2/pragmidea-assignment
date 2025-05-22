@@ -1,4 +1,5 @@
-import { Airport, PassengerType } from "@/_types";
+import { Airport, Flight, PassengerType } from "@/_types";
+import { Props as UseInfiniteFlightsProps } from "@/flights/_hooks/use-infinite-flights";
 
 export const PassengerAgeRange: Record<PassengerType, string> = {
     [PassengerType.ADULTS]: '12+',
@@ -22,7 +23,6 @@ export function searchAirports(
         .map((airport) => {
             const code = airport.code?.toLowerCase() || "";
             const name = airport.name?.toLowerCase() || "";
-            const city = airport.city?.toLowerCase() || "";
 
             let score = 0;
 
@@ -34,10 +34,6 @@ export function searchAirports(
             else if (name.startsWith(q)) score += 70;
             else if (name.includes(q)) score += 40;
 
-            if (city === q) score += 85;
-            else if (city.startsWith(q)) score += 60;
-            else if (city.includes(q)) score += 35;
-
             return { airport, score };
         })
         .filter((item) => item.score > 0)
@@ -45,4 +41,16 @@ export function searchAirports(
         .slice(from, from + limit);
 
     return scored.map((item) => item.airport);
+}
+
+export function sortFlights(flights: Flight[], sort: UseInfiniteFlightsProps['sort']) {
+    return flights.sort((a, b) => {
+        switch (sort.by) {
+            case 'duration':
+                return sort.order === 'asc' ? a.duration.localeCompare(b.duration) : b.duration.localeCompare(a.duration);
+
+            default:
+                return sort.order === 'asc' ? a.price.localeCompare(b.price) : b.price.localeCompare(a.price);
+        }
+    });
 }

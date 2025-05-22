@@ -35,6 +35,7 @@ export default function AirportFilter({
     isLoading,
     fetchNextPage,
     isFetchingNextPage,
+    hasNextPage,
   } = useSearchAirport();
   const [open, setOpen] = useState(false);
   const selectedAirport = useMemo(
@@ -106,32 +107,32 @@ export default function AirportFilter({
 
         {isLoading ? (
           <div className="p-2 text-center text-sm opacity-50">Loading...</div>
-        ) : airports?.pages.reduce((acc, page) => acc + page.data.length, 0) ? (
+        ) : airports?.length ? (
           <VirtualList
             ref={virtualizedListRef}
-            className="max-h-[300px]"
+            className="max-h-[300px] overflow-y-auto"
             loadMore={() => fetchNextPage()}
             isLoading={isFetchingNextPage}
+            disabled={isLoading || !hasNextPage}
           >
-            {airports.pages.map((page) =>
-              page.data.map((airport) => (
-                <div
-                  key={airport.code}
-                  className={cn(
-                    'flex items-center justify-between p-2 text-sm not-last-of-type:border-b',
-                    airport.code === value
-                      ? 'bg-primary/30'
-                      : 'hover:bg-gray-100'
-                  )}
-                  onClick={() => handleChange(airport)}
-                >
-                  {`${airport.code} - ${airport.name}`}
-                  {airport.code === value && (
-                    <CheckIcon className="text-primary size-4" />
-                  )}
-                </div>
-              ))
-            )}
+            {airports.map((airport, idx) => (
+              <div
+                key={airport.code}
+                className={cn(
+                  'flex items-center justify-between p-2 text-sm',
+                  airport.code === value
+                    ? 'bg-primary/30'
+                    : 'hover:bg-gray-100',
+                  idx !== airports.length - 1 && 'border-b'
+                )}
+                onClick={() => handleChange(airport)}
+              >
+                {`${airport.code} - ${airport.name}`}
+                {airport.code === value && (
+                  <CheckIcon className="text-primary size-4" />
+                )}
+              </div>
+            ))}
           </VirtualList>
         ) : (
           <div className="p-2 text-center text-sm opacity-50">
