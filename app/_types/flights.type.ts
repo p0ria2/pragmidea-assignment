@@ -26,6 +26,7 @@ export interface Flight {
         at: string;
         iata: string;
     };
+    stops: string[]
     price: string;
     currency: string;
 }

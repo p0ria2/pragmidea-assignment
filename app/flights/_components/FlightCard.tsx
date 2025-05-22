@@ -27,9 +27,17 @@ export default function FlightCard({ flight }: Props) {
             <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs opacity-70">
               {flight.airline}
             </span>
+
             <span className="rounded-2xl bg-slate-200 px-2 py-1 text-xs font-semibold text-slate-800">
               {flight.duration.replace('h', 'h ')}
             </span>
+
+            {flight.stops.length ? (
+              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs opacity-70">
+                {flight.stops.length} stop{flight.stops.length > 1 ? 's' : ''}{' '}
+                at {flight.stops.join(', ')}
+              </span>
+            ) : null}
           </div>
         </div>
 

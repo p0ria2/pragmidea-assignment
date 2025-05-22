@@ -95,6 +95,7 @@ export class AmadeusApiProvider extends FlightApiProvider {
         const arrival = lastSegment.arrival;
         const price = data.price.grandTotal;
         const currency = data.price.currency;
+        const stops = itinerary.segments.slice(1).map((segment: any) => segment.departure.iataCode);
 
         return {
             id: data.id,
@@ -108,6 +109,7 @@ export class AmadeusApiProvider extends FlightApiProvider {
                 at: arrival.at,
                 iata: arrival.iataCode,
             },
+            stops,
             price,
             currency,
         };
