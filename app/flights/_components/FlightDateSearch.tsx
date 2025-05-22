@@ -48,7 +48,7 @@ export default function FlightDateSearch({
           <div className="flex items-center gap-3">
             <Label>{label}</Label>
             <span className={cn(value ? 'opacity-100' : 'opacity-50')}>
-              {value ? format(parseISO(value), 'dd MMM yyyy') : 'Select Date'}
+              {value ? format(parseISO(value), 'EEE, dd MMM') : 'Select Date'}
             </span>
           </div>
 

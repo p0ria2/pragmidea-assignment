@@ -15,7 +15,7 @@ export default function FlightCard({ flight }: Props) {
       <div className="flex flex-1 justify-between gap-6 border-r border-dashed pr-10 pl-4">
         <div className="flex flex-col gap-1">
           <span className="text-xs opacity-70">
-            {format(departureDate, 'dd MMM yyyy')}
+            {format(departureDate, 'EEE, dd MMM')}
           </span>
           <span className="font-medium">{format(departureDate, 'HH:mm')}</span>
           <span>{flight.departure.iata}</span>
@@ -43,7 +43,7 @@ export default function FlightCard({ flight }: Props) {
 
         <div className="flex flex-col gap-1">
           <span className="text-xs opacity-70">
-            {format(arrivalDate, 'dd MMM yyyy')}
+            {format(arrivalDate, 'EEE, dd MMM')}
           </span>
           <span className="font-medium">{format(arrivalDate, 'HH:mm')}</span>
           <span>{flight.arrival.iata}</span>
