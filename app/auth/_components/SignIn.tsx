@@ -27,12 +27,17 @@ import z from 'zod';
 import { useAuth } from '../_providers/AuthProvider';
 
 const MIN_PASSWORD_LENGTH = Number(process.env.NEXT_PUBLIC_MIN_PASS_LEN);
+type Provider = Parameters<typeof signIn.social>[0]['provider'];
 
 export default function SignIn() {
   const { isSignInOpen, openSignIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
-  const [isAuthPending, setIsAuthPending] = useState(false);
+  const [isPending, setIsPending] = useState<
+    { email: boolean } & Partial<Record<Provider, boolean>>
+  >({
+    email: false,
+  });
   const formSchema = z.object({
     email: z.string().email(),
     password: z.string().refine(
@@ -62,22 +67,45 @@ export default function SignIn() {
     form.setFocus('email');
   };
 
+  const handleSignInWithSocial = (provider: Provider) => {
+    signIn.social(
+      {
+        provider,
+        callbackURL: '/',
+      },
+      {
+        onRequest: () => {
+          setIsPending({ ...isPending, [provider]: true });
+        },
+        onResponse: () => {
+          setIsPending({ ...isPending, [provider]: false });
+        },
+        onSuccess: () => {
+          openSignIn(false);
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message || 'Something went wrong');
+        },
+      }
+    );
+  };
+
   const onSubmitCallback = useMemo<Parameters<typeof signIn.email>[1]>(
     () => ({
       onRequest: () => {
-        setIsAuthPending(true);
+        setIsPending({ ...isPending, email: true });
       },
       onResponse: () => {
-        setIsAuthPending(false);
+        setIsPending({ ...isPending, email: false });
       },
       onSuccess: () => {
         openSignIn(false);
       },
       onError: (ctx) => {
-        toast.error(ctx.error.message);
+        toast.error(ctx.error.message || 'Something went wrong');
       },
     }),
-    [isAuthPending, openSignIn]
+    [isPending, openSignIn]
   );
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -163,7 +191,8 @@ export default function SignIn() {
             <LoadingButton
               className="mt-2 mb-4 w-full cursor-pointer"
               type="submit"
-              isLoading={isAuthPending}
+              isLoading={isPending.email}
+              disabled={Object.values(isPending).some((v) => v)}
             >
               {isRegister ? 'Register' : 'Sign in'}
             </LoadingButton>
@@ -189,13 +218,15 @@ export default function SignIn() {
                 <div className="bg-border h-px w-full"></div>
               </div>
 
-              <Button
-                className="w-full cursor-pointer bg-black"
+              <LoadingButton
+                className="w-full cursor-pointer bg-black hover:bg-blue-500"
                 type="submit"
-                disabled={isAuthPending}
+                disabled={isPending.email}
+                isLoading={isPending.google}
+                onClick={() => handleSignInWithSocial('google')}
               >
                 Sign in with Google
-              </Button>
+              </LoadingButton>
             </>
           )}
         </Form>

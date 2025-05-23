@@ -10,4 +10,11 @@ export const auth = betterAuth({
         enabled: true,
         minPasswordLength: Number(process.env.NEXT_PUBLIC_MIN_PASS_LEN),
     },
+    socialProviders: {
+        google: {
+            enabled: true,
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        },
+    }
 });
