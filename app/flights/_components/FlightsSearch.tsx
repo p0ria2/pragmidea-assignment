@@ -8,10 +8,8 @@ import {
   FormMessage,
   LoadingButton,
 } from '@/_components';
-import { toSearchParams } from '@/_lib/navigation-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isAfter, isSameDay, isToday, parseISO } from 'date-fns';
-import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
@@ -89,10 +87,10 @@ export default function FlightsSearch() {
     return { adults, children, infants };
   }, [form.watch('adults'), form.watch('children'), form.watch('infants')]);
 
-  const router = useRouter();
+  const { handleSearchChange } = useFlightsSearch();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    router.push(`/flights?${toSearchParams(values)}`);
+    handleSearchChange(values);
   }
 
   useEffect(() => {
@@ -100,7 +98,7 @@ export default function FlightsSearch() {
   }, [search]);
 
   return (
-    <div className="px-4 py-2">
+    <div className="px-4 pt-2">
       <div className="rounded border bg-white p-4 shadow">
         <Form {...form}>
           <form
@@ -196,7 +194,7 @@ export default function FlightsSearch() {
               className="w-full cursor-pointer md:col-span-2"
               type="submit"
               size="lg"
-              isLoading={isSubmitting}
+              disabled={isSubmitting}
             >
               Search
             </LoadingButton>

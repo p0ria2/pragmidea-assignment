@@ -1,4 +1,4 @@
-import { Airport, Flight, PassengerType } from "@/_types";
+import { Airport, Flight, FlightsFilters, FlightsSortBy, PassengerType } from "@/_types";
 import { Props as UseInfiniteFlightsProps } from "@/flights/_hooks/use-infinite-flights";
 
 export const PassengerAgeRange: Record<PassengerType, string> = {
@@ -43,14 +43,22 @@ export function searchAirports(
     return scored.map((item) => item.airport);
 }
 
-export function sortFlights(flights: Flight[], sort: UseInfiniteFlightsProps['sort']) {
-    return flights.sort((a, b) => {
-        switch (sort.by) {
-            case 'duration':
-                return sort.order === 'asc' ? a.duration.localeCompare(b.duration) : b.duration.localeCompare(a.duration);
+export function filterFlights(flights: Flight[], filters: FlightsFilters, from = 0, limit = 10) {
+    const sortedFlights = flights.sort((a, b) => {
+        switch (filters.sort.by) {
+            case FlightsSortBy.Duration:
+                return filters.sort.order === 'asc' ? a.duration.localeCompare(b.duration) : b.duration.localeCompare(a.duration);
+
+            case FlightsSortBy.Departure:
+                return filters.sort.order === 'asc' ? a.departure.at.localeCompare(b.departure.at) : b.departure.at.localeCompare(a.departure.at);
+
+            case FlightsSortBy.Stops:
+                return filters.sort.order === 'asc' ? a.stops.length - b.stops.length : b.stops.length - a.stops.length;
 
             default:
-                return sort.order === 'asc' ? a.price.localeCompare(b.price) : b.price.localeCompare(a.price);
+                return filters.sort.order === 'asc' ? Number(a.price) - Number(b.price) : Number(b.price) - Number(a.price);
         }
     });
+
+    return sortedFlights.slice(from, from + limit);
 }

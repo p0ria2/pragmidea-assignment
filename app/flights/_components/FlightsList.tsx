@@ -10,7 +10,6 @@ export default function FlightsList() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteFlights({
       limit: 10,
-      sort: { by: 'price', order: 'asc' },
     });
   const virtualizedListRef = useRef<VirtualListRef>(null);
 

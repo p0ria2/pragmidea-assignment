@@ -52,7 +52,7 @@ export default function FlightDateSearch({
             </span>
           </div>
 
-          <CalendarIcon className="size-4 opacity-50" />
+          <CalendarIcon className="text-muted-foreground size-4" />
         </Button>
       </PopoverTrigger>
 

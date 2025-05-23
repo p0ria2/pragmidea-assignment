@@ -87,7 +87,7 @@ export default function AirportSearch({
                 : 'Select Airport'}
             </span>
           </div>
-          <ChevronDownIcon className="size-4 opacity-50" />
+          <ChevronDownIcon className="text-muted-foreground size-4" />
         </Button>
       </PopoverTrigger>
 

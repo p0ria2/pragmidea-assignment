@@ -1,7 +1,8 @@
 'use client';
 
+import { toSearchParams } from '@/_lib/navigation-utils';
 import type { FlightsSearch } from '@/_types';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ComponentProps,
   createContext,
@@ -9,6 +10,7 @@ import {
   SetStateAction,
   Suspense,
   use,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -21,6 +23,9 @@ interface FlightsSearchContextType {
   isSearchValid: boolean;
   isSubmitting: boolean;
   setIsSubmitting: Dispatch<SetStateAction<boolean>>;
+  handleSearchChange: (
+    search: Partial<z.infer<typeof FlightsSearchSchema>>
+  ) => void;
 }
 
 const FlightsSearchContext = createContext<FlightsSearchContextType | null>(
@@ -47,7 +52,20 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
     return FlightsSearchSchema.safeParse(search).success;
   }, [search]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
   const searchParams = useSearchParams();
+
+  const handleSearchChange = useCallback<
+    FlightsSearchContextType['handleSearchChange']
+  >(
+    (search) => {
+      const preSearchParams = Object.fromEntries(searchParams.entries());
+      router.replace(
+        `/flights?${toSearchParams({ ...preSearchParams, ...search })}`
+      );
+    },
+    [searchParams, router]
+  );
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
@@ -59,7 +77,13 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <FlightsSearchContext
-      value={{ search, isSearchValid, isSubmitting, setIsSubmitting }}
+      value={{
+        search,
+        isSearchValid,
+        isSubmitting,
+        setIsSubmitting,
+        handleSearchChange,
+      }}
     >
       {children}
     </FlightsSearchContext>

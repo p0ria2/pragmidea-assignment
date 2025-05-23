@@ -20,4 +20,11 @@ export { default as TopNavbar } from './TopNavbar';
 export { Input } from './input';
 export { default as VirtualList, type VirtualListRef } from './VirtualList';
 export { default as LoadingButton } from './LoadingButton';
+export {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select';
 

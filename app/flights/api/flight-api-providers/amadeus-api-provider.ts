@@ -125,14 +125,15 @@ export class AmadeusApiProvider extends FlightApiProvider {
     }
 
     private getFlightDuration(duration: string): string {
-        const match = duration.match(/PT(\d+)H(\d+)M/);
+        const match = duration.match(/PT(\d+)H(?:\s*(\d+)M)?/);
 
         if (!match) {
+            console.error("Invalid flight duration:", duration);
             return "N/A";
         }
 
         const hours = match[1].padStart(2, '0');
-        const minutes = match[2].padStart(2, '0');
+        const minutes = match[2] ? match[2].padStart(2, '0') : '00';
 
         return `${hours}:${minutes}`;
     }

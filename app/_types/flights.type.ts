@@ -12,8 +12,6 @@ export interface Airport {
     code: string;
 }
 
-export type FlightsSearch = z.infer<typeof flightsSearchSchema>;
-
 export interface Flight {
     id: string;
     duration: string;
@@ -29,4 +27,17 @@ export interface Flight {
     stops: string[]
     price: string;
     currency: string;
+}
+
+export type FlightsSearch = z.infer<typeof flightsSearchSchema>;
+
+export enum FlightsSortBy {
+    Price = 'price',
+    Duration = 'duration',
+    Departure = 'departure',
+    Stops = 'stops',
+}
+
+export interface FlightsFilters {
+    sort: { by: FlightsSortBy; order: 'asc' | 'desc' };
 }

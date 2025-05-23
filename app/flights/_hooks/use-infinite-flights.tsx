@@ -3,23 +3,31 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import useFlights from './use-flights';
 import { Flight } from '@/_types';
+import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
+import { filterFlights } from '@/_lib/flights-utils';
 
 export interface Props {
-  sort: { by: 'price' | 'duration'; order: 'asc' | 'desc' };
   limit: number;
 }
 
-export default function useInfiniteFlights({ limit, sort }: Props) {
+export default function useInfiniteFlights({ limit }: Props) {
   const { data: allFlights, isLoading: isFlightsLoading } = useFlights();
+  const { filters } = useFlightsFilters();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ['infinite-flights', allFlights, sort, limit],
+      queryKey: ['infinite-flights', allFlights, filters, limit],
       queryFn: ({ pageParam }) => {
-        const data = allFlights?.slice(pageParam, pageParam + limit);
+        const filteredFlights = filterFlights(
+          allFlights || [],
+          filters,
+          pageParam,
+          limit
+        );
         return {
-          data,
-          nextPage: data!.length < limit ? undefined : pageParam + limit,
+          data: filteredFlights,
+          nextPage:
+            filteredFlights.length < limit ? undefined : pageParam + limit,
         };
       },
       initialPageParam: 0,
