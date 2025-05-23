@@ -36,47 +36,47 @@ export default function FlightDateSearch({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="min-w-[250px]" asChild>
-        <Button
-          className={cn(
-            'flex items-center justify-between',
-            error && 'border-red-500'
-          )}
-          variant="outline"
-        >
-          <div className="flex items-center gap-3">
-            <Label>{label}</Label>
-            <span className={cn(value ? 'opacity-100' : 'opacity-50')}>
-              {value ? format(parseISO(value), 'EEE, dd MMM') : 'Select Date'}
-            </span>
-          </div>
+    <div className="relative min-w-[250px]">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger className="w-full" asChild>
+          <Button
+            className={cn(
+              'flex items-center justify-between',
+              error && 'border-red-500'
+            )}
+            variant="outline"
+          >
+            <div className="flex items-center gap-3">
+              <Label>{label}</Label>
+              <span className={cn(value ? 'opacity-100' : 'opacity-50')}>
+                {value ? format(parseISO(value), 'EEE, dd MMM') : 'Select Date'}
+              </span>
+            </div>
 
-          <CalendarIcon className="text-muted-foreground size-4" />
-        </Button>
-      </PopoverTrigger>
+            <CalendarIcon className="text-muted-foreground size-4" />
+          </Button>
+        </PopoverTrigger>
 
-      <PopoverAnchor className="relative">
         {value && (
           <XIcon
-            className="absolute -top-[33px] right-[34px] size-4 cursor-pointer"
+            className="absolute top-1/2 right-9 size-4 -translate-y-1/2 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               onChange('');
             }}
           />
         )}
-      </PopoverAnchor>
 
-      <PopoverContent className="overflow-hidden p-0">
-        <Calendar
-          className="border-none!"
-          value={value ? parseISO(value) : null}
-          onChange={handleChange as any}
-          minDate={minDate}
-        />
-      </PopoverContent>
-    </Popover>
+        <PopoverContent className="overflow-hidden p-0">
+          <Calendar
+            className="border-none!"
+            value={value ? parseISO(value) : null}
+            onChange={handleChange as any}
+            minDate={minDate}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
 

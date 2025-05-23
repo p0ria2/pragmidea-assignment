@@ -1,21 +1,19 @@
 'use client';
 
-import { Button } from '@/_components';
+import { Avatar, Button } from '@/_components';
+import { initials } from '@/_lib/string-utils';
 import { useAuth } from '@/auth/_providers/AuthProvider';
 
 export default function UserAvatar() {
-  const { isSignedIn, isAuthPending, openSignIn } = useAuth();
-
-  if (isAuthPending) {
-    return null;
-  }
+  const { isSignedIn, isAuthPending, openSignIn, user } = useAuth();
 
   return isSignedIn ? (
-    <div>Sign out</div>
+    <Avatar imageUrl={user?.image} fallback={initials(user?.name || '')} />
   ) : (
     <Button
       className="text-primary-foreground cursor-pointer"
       variant="default"
+      disabled={isAuthPending}
       onClick={() => openSignIn(true)}
     >
       Sign in

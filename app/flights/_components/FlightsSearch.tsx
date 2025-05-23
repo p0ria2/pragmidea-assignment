@@ -118,7 +118,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="originLocationCode"
               render={({ field }) => (
-                <FormItem className="">
+                <FormItem>
                   <FormControl>
                     <AirportSearch
                       label="From"
@@ -136,7 +136,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="destinationLocationCode"
               render={({ field }) => (
-                <FormItem className="">
+                <FormItem>
                   <FormControl>
                     <AirportSearch
                       label="To"
@@ -154,7 +154,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="departureDate"
               render={({ field }) => (
-                <FormItem className="">
+                <FormItem>
                   <FormControl>
                     <FlightDateSearch
                       label="Departure"
@@ -173,7 +173,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="returnDate"
               render={({ field }) => (
-                <FormItem className="">
+                <FormItem>
                   <FormControl>
                     <FlightDateSearch
                       label="Return"

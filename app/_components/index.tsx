@@ -39,3 +39,4 @@ export {
   DialogTitle,
   DialogTrigger,
 } from './dialog';
+export { default as Avatar } from './Avatar';
