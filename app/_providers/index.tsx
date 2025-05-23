@@ -1,5 +1,6 @@
 'use client';
 
+import AuthProvider from '@/auth/_providers/AuthProvider';
 import QueryProvider from './QueryProvider';
 
 export default function GlobalProviders({
@@ -7,6 +8,10 @@ export default function GlobalProviders({
 }: {
   children: React.ReactNode;
 }) {
-  return <QueryProvider>{children}</QueryProvider>;
+  return (
+    <QueryProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </QueryProvider>
+  );
 }
 

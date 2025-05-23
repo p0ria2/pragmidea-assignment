@@ -1,3 +1,4 @@
+import UserAvatar from '@/profile/_components/UserAvatar';
 import Link from 'next/link';
 
 export default function TopNavbar() {
@@ -6,6 +7,8 @@ export default function TopNavbar() {
       <h1 className="text-2xl font-bold">
         <Link href="/">Pragma Flights</Link>
       </h1>
+
+      <UserAvatar />
     </div>
   );
 }

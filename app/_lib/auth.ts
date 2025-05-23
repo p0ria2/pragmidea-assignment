@@ -8,5 +8,6 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
+        minPasswordLength: Number(process.env.NEXT_PUBLIC_MIN_PASS_LEN),
     },
 });

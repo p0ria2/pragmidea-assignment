@@ -1,21 +1,58 @@
-import * as React from "react"
+import * as React from 'react';
 
-import { cn } from "@/_lib/css-utils"
+import { cn } from '@/_lib/css-utils';
+import { LucideIcon } from 'lucide-react';
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
-  return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-        className
-      )}
-      {...props}
-    />
-  )
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  startIcon?: React.ReactElement<React.ComponentProps<LucideIcon>>;
+  endIcon?: React.ReactElement<React.ComponentProps<LucideIcon>>;
 }
 
-export { Input }
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, startIcon, endIcon, ...props }, ref) => {
+    const StartIcon = startIcon
+      ? React.cloneElement(startIcon, {
+          className: cn(startIcon.props?.className, 'text-muted-foreground'),
+          size: 18,
+        })
+      : null;
+
+    const EndIcon = endIcon
+      ? React.cloneElement(endIcon, {
+          className: cn(endIcon.props?.className, 'text-muted-foreground'),
+          size: 18,
+        })
+      : null;
+
+    return (
+      <div className="relative w-full">
+        {StartIcon && (
+          <div className="absolute top-1/2 left-1.5 -translate-y-1/2 transform">
+            {StartIcon}
+          </div>
+        )}
+        <input
+          type={type}
+          className={cn(
+            'border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-4 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+            startIcon ? 'pl-8' : '',
+            endIcon ? 'pr-8' : '',
+            className
+          )}
+          ref={ref}
+          {...props}
+        />
+        {EndIcon && (
+          <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
+            {EndIcon}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+Input.displayName = 'Input';
+
+export { Input };
+
