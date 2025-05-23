@@ -50,7 +50,7 @@ export default function FlightCard({ flight }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-[0_0_160px] flex-col px-4">
+      <div className="flex flex-col px-4 md:flex-[0_0_160px]">
         <span className="flex-1 text-lg font-semibold">
           {flight.currency} {flight.price}
         </span>

@@ -9,6 +9,7 @@ import {
 } from '@/_components';
 import { FlightsSortBy, type FlightsFilters } from '@/_types';
 import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
+import useFlights from '../_hooks/use-flights';
 
 const SORT_OPTIONS: {
   label: string;
@@ -25,6 +26,11 @@ const SORT_OPTIONS: {
 
 export default function FlightsFilters() {
   const { filters, handleFiltersChange } = useFlightsFilters();
+  const {
+    data: allFlights,
+    isLoading: isFlightsLoading,
+    isFetched: isFlightsFetched,
+  } = useFlights();
 
   const handleSortChange = (value: string) => {
     const [by, order] = value.split('-');
@@ -35,7 +41,7 @@ export default function FlightsFilters() {
   };
 
   return (
-    <div className="px-4">
+    <div className="flex flex-wrap items-center justify-between gap-4 px-4">
       <Select
         value={`${filters.sort.by}-${filters.sort.order}`}
         onValueChange={handleSortChange}
@@ -54,6 +60,12 @@ export default function FlightsFilters() {
           ))}
         </SelectContent>
       </Select>
+
+      <span className="opacity-70">
+        {!isFlightsFetched || isFlightsLoading
+          ? null
+          : `${allFlights?.length || 0} results found`}
+      </span>
     </div>
   );
 }
