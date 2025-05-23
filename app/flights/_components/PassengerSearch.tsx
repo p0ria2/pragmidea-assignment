@@ -5,6 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/_components';
+import { cn } from '@/_lib/css-utils';
 import { getPassengerCount, PassengerAgeRange } from '@/_lib/flights-utils';
 import { capitalize } from '@/_lib/string-utils';
 import { PassengerType } from '@/_types';
@@ -14,9 +15,10 @@ import { useEffect, useState } from 'react';
 interface Props {
   value: Record<PassengerType, number>;
   onChange: (passengerType: PassengerType, value: number) => void;
+  className?: string;
 }
 
-export default function PassengerSearch({ value, onChange }: Props) {
+export default function PassengerSearch({ value, onChange, className }: Props) {
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(getPassengerCount(value));
 
@@ -29,7 +31,10 @@ export default function PassengerSearch({ value, onChange }: Props) {
   return (
     <Popover onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button className="flex items-center gap-4" variant="outline">
+        <Button
+          className={cn('flex items-center gap-4', className)}
+          variant="outline"
+        >
           <span className="text-sm font-medium">
             <span className="inline-block min-w-4">{count}</span> Passenger
             {count > 1 ? 's' : ''}

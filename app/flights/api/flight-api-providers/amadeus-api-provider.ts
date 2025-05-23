@@ -128,7 +128,7 @@ export class AmadeusApiProvider extends FlightApiProvider {
         const match = duration.match(/PT(\d+)H(\d+)M/);
 
         if (!match) {
-            throw new Error("Invalid duration format");
+            return "N/A";
         }
 
         const hours = match[1].padStart(2, '0');

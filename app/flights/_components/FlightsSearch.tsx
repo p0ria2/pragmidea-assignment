@@ -104,21 +104,23 @@ export default function FlightsSearch() {
       <div className="rounded border bg-white p-4 shadow">
         <Form {...form}>
           <form
-            className="flex flex-wrap gap-4"
+            className="grid grid-cols-1 gap-4 md:grid-cols-2"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <PassengerSearch
-              value={passengerCount}
-              onChange={(passengerType, value) =>
-                form.setValue(passengerType, value)
-              }
-            />
+            <div className="md:col-span-2">
+              <PassengerSearch
+                value={passengerCount}
+                onChange={(passengerType, value) =>
+                  form.setValue(passengerType, value)
+                }
+              />
+            </div>
 
             <FormField
               control={form.control}
               name="originLocationCode"
               render={({ field }) => (
-                <FormItem className="flex-[1_0_200px]">
+                <FormItem className="">
                   <FormControl>
                     <AirportSearch
                       label="From"
@@ -136,7 +138,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="destinationLocationCode"
               render={({ field }) => (
-                <FormItem className="flex-[1_0_200px]">
+                <FormItem className="">
                   <FormControl>
                     <AirportSearch
                       label="To"
@@ -154,7 +156,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="departureDate"
               render={({ field }) => (
-                <FormItem className="flex-1">
+                <FormItem className="">
                   <FormControl>
                     <FlightDateSearch
                       label="Departure"
@@ -173,7 +175,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="returnDate"
               render={({ field }) => (
-                <FormItem className="flex-1">
+                <FormItem className="">
                   <FormControl>
                     <FlightDateSearch
                       label="Return"
@@ -191,7 +193,7 @@ export default function FlightsSearch() {
             />
 
             <LoadingButton
-              className="w-full cursor-pointer"
+              className="w-full cursor-pointer md:col-span-2"
               type="submit"
               size="lg"
               isLoading={isSubmitting}
