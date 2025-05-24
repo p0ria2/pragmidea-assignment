@@ -4,7 +4,7 @@ import { Avatar, Button } from '@/_components';
 import { initials } from '@/_lib/string-utils';
 import { useAuth } from '@/auth/_providers/AuthProvider';
 
-export default function UserAvatar() {
+export default function ProfileAvatar() {
   const { isSignedIn, isAuthPending, openSignIn, user } = useAuth();
 
   return isSignedIn ? (
