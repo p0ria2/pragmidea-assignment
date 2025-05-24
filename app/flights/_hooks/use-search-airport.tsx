@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useAirports } from '../_providers/AirportsProvider';
 import { useMemo, useState } from 'react';
 import { searchAirports } from '@/_lib/flights-utils';

@@ -1,4 +1,5 @@
 import AirportsProvider from './_providers/AirportsProvider';
+import FlightsBookmarkProvider from './_providers/FlightsBookmarkProvider';
 import FlightsFiltersProvider from './_providers/FlightsFiltersProvider';
 import FlightsSearchProvider from './_providers/FlightsSearchProvider';
 
@@ -10,7 +11,9 @@ export default function FlightsLayout({
   return (
     <FlightsSearchProvider>
       <FlightsFiltersProvider>
-        <AirportsProvider>{children}</AirportsProvider>
+        <FlightsBookmarkProvider>
+          <AirportsProvider>{children}</AirportsProvider>
+        </FlightsBookmarkProvider>
       </FlightsFiltersProvider>
     </FlightsSearchProvider>
   );

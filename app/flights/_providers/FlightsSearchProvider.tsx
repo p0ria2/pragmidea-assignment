@@ -1,6 +1,8 @@
 'use client';
 
+import { sendRequest } from '@/_lib/http-utils';
 import { toSearchParams } from '@/_lib/navigation-utils';
+import { parseUrlSearchParams } from '@/_lib/url-utils';
 import type { FlightsSearch } from '@/_types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -15,6 +17,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { toast } from 'sonner';
 import z from 'zod';
 import { flightsSearchSchema } from '../_components/FlightsSearch';
 
@@ -23,9 +26,7 @@ interface FlightsSearchContextType {
   isSearchValid: boolean;
   isSubmitting: boolean;
   setIsSubmitting: Dispatch<SetStateAction<boolean>>;
-  handleSearchChange: (
-    search: Partial<z.infer<typeof FlightsSearchSchema>>
-  ) => void;
+  onSearchChange: (search: Partial<FlightsSearch>) => void;
 }
 
 const FlightsSearchContext = createContext<FlightsSearchContextType | null>(
@@ -55,8 +56,8 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleSearchChange = useCallback<
-    FlightsSearchContextType['handleSearchChange']
+  const onSearchChange = useCallback<
+    FlightsSearchContextType['onSearchChange']
   >(
     (search) => {
       const preSearchParams = Object.fromEntries(searchParams.entries());
@@ -68,10 +69,9 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    const parsedSearch = FlightsSearchSchema.safeParse(params);
-    if (parsedSearch.success) {
-      setSearch(parsedSearch.data);
+    const params = parseUrlSearchParams(searchParams, FlightsSearchSchema);
+    if (params) {
+      setSearch(params);
     }
   }, [searchParams]);
 
@@ -82,7 +82,7 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
         isSearchValid,
         isSubmitting,
         setIsSubmitting,
-        handleSearchChange,
+        onSearchChange,
       }}
     >
       {children}
@@ -103,6 +103,7 @@ export function useFlightsSearch() {
       'useFlightsSearch must be used within a FlightsSearchProvider'
     );
   }
+
   return context;
 }
 

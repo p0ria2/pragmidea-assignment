@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -27,7 +26,7 @@ import z from 'zod';
 import { useAuth } from '../_providers/AuthProvider';
 
 const MIN_PASSWORD_LENGTH = Number(process.env.NEXT_PUBLIC_MIN_PASS_LEN);
-type Provider = Parameters<typeof signIn.social>[0]['provider'];
+type Provider = 'email' | Parameters<typeof signIn.social>[0]['provider'];
 
 export default function SignIn() {
   const { isSignInOpen, openSignIn } = useAuth();
@@ -67,48 +66,28 @@ export default function SignIn() {
     form.setFocus('email');
   };
 
-  const handleSignInWithSocial = (provider: Provider) => {
-    signIn.social(
-      {
-        provider,
-        callbackURL: '/',
-      },
-      {
-        onRequest: () => {
-          setIsPending({ ...isPending, [provider]: true });
-        },
-        onResponse: () => {
-          setIsPending({ ...isPending, [provider]: false });
-        },
-        onSuccess: () => {
-          openSignIn(false);
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message || 'Something went wrong');
-        },
-      }
-    );
-  };
-
-  const onSubmitCallback = useMemo<Parameters<typeof signIn.email>[1]>(
-    () => ({
+  const onSubmitCallback = useMemo<
+    (provider: Provider) => Parameters<typeof signIn.email>[1]
+  >(
+    () => (provider) => ({
       onRequest: () => {
-        setIsPending({ ...isPending, email: true });
+        setIsPending({ ...isPending, [provider]: true });
       },
       onResponse: () => {
-        setIsPending({ ...isPending, email: false });
+        setIsPending({ ...isPending, [provider]: false });
       },
       onSuccess: () => {
         openSignIn(false);
+        form.reset();
       },
       onError: (ctx) => {
         toast.error(ctx.error.message || 'Something went wrong');
       },
     }),
-    [isPending, openSignIn]
+    [isPending, openSignIn, form]
   );
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isRegister) {
       signUp.email(
         {
@@ -117,7 +96,7 @@ export default function SignIn() {
           name: values.email,
           callbackURL: '/',
         },
-        onSubmitCallback
+        onSubmitCallback('email')
       );
     } else {
       signIn.email(
@@ -125,10 +104,21 @@ export default function SignIn() {
           email: values.email,
           password: values.password,
         },
-        onSubmitCallback
+        onSubmitCallback('email')
       );
     }
-  }
+  };
+
+  const handleSignInWithSocial = (provider: Exclude<Provider, 'email'>) => {
+    setIsPending({ ...isPending, [provider]: true });
+    signIn.social(
+      {
+        provider,
+        callbackURL: '/',
+      },
+      onSubmitCallback(provider)
+    );
+  };
 
   return (
     <Dialog open={isSignInOpen} onOpenChange={openSignIn}>
@@ -192,7 +182,6 @@ export default function SignIn() {
               className="mt-2 mb-4 w-full cursor-pointer"
               type="submit"
               isLoading={isPending.email}
-              disabled={Object.values(isPending).some((v) => v)}
             >
               {isRegister ? 'Register' : 'Sign in'}
             </LoadingButton>

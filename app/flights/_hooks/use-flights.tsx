@@ -5,6 +5,8 @@ import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
 import { toSearchParams } from '@/_lib/navigation-utils';
 import { Flight } from '@/_types';
 import { useEffect } from 'react';
+import { sendRequest } from '@/_lib/http-utils';
+import { toast } from 'sonner';
 
 export default function useFlights() {
   const { search, isSearchValid, setIsSubmitting } = useFlightsSearch();
@@ -12,8 +14,12 @@ export default function useFlights() {
   const { isLoading, ...rest } = useQuery<Flight[]>({
     queryKey: ['flights', search],
     queryFn: async () => {
-      const response = await fetch(`/flights/api?${toSearchParams(search)}`);
-      return response.json();
+      try {
+        return sendRequest<Flight[]>(`/api/flights?${toSearchParams(search)}`);
+      } catch (error) {
+        toast.error('Failed to fetch flights');
+        throw error;
+      }
     },
     enabled: isSearchValid,
   });

@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Button,
   Form,
   FormControl,
   FormField,
@@ -17,6 +18,10 @@ import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
 import AirportSearch from './AirportSearch';
 import FlightDateSearch from './FlightDateSearch';
 import PassengerSearch from './PassengerSearch';
+import { BookmarkIcon } from 'lucide-react';
+import { useFlightsBookmark } from '../_providers/FlightsBookmarkProvider';
+import { cn } from '@/_lib/css-utils';
+import { toSearchParams } from '@/_lib/navigation-utils';
 
 export const flightsSearchSchema = z.object({
   originLocationCode: z.string().length(3, { message: 'From is required' }),
@@ -87,11 +92,23 @@ export default function FlightsSearch() {
     return { adults, children, infants };
   }, [form.watch('adults'), form.watch('children'), form.watch('infants')]);
 
-  const { handleSearchChange } = useFlightsSearch();
+  const { onSearchChange } = useFlightsSearch();
+  const {
+    toggleBookmark,
+    bookmarkFlightsSearchMap,
+    isBookmarkFlightsSearchMapLoading,
+  } = useFlightsBookmark();
+  const isBookmarked =
+    form.formState.isValid &&
+    !!bookmarkFlightsSearchMap[toSearchParams(form.getValues())];
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    handleSearchChange(values);
-  }
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    onSearchChange(values);
+  };
+
+  const onToggleBookmark = () => {
+    toggleBookmark(form.getValues(), isBookmarked);
+  };
 
   useEffect(() => {
     form.reset(search);
@@ -105,13 +122,30 @@ export default function FlightsSearch() {
             className="grid grid-cols-1 gap-4 md:grid-cols-2"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <div className="md:col-span-2">
+            <div className="flex items-center justify-between gap-2 md:col-span-2">
               <PassengerSearch
                 value={passengerCount}
                 onChange={(passengerType, value) =>
                   form.setValue(passengerType, value)
                 }
               />
+
+              <Button
+                className="cursor-pointer rounded-full"
+                variant="ghost"
+                size="icon"
+                type="button"
+                disabled={
+                  !form.formState.isValid || isBookmarkFlightsSearchMapLoading
+                }
+                onClick={onToggleBookmark}
+              >
+                <BookmarkIcon
+                  className={cn({
+                    'fill-yellow-400 text-yellow-500': isBookmarked,
+                  })}
+                />
+              </Button>
             </div>
 
             <FormField

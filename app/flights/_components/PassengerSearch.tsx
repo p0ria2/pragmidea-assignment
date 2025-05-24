@@ -43,7 +43,7 @@ export default function PassengerSearch({ value, onChange, className }: Props) {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent>
+      <PopoverContent className="ml-2">
         <div className="flex flex-col gap-8 pb-2">
           {Object.values(PassengerType).map((passengerType) => (
             <div
