@@ -1,8 +1,8 @@
 'use client';
 
-import { toSearchParams } from '@/_lib/navigation-utils';
+import { toSearchParams } from '@/_lib/url-utils';
 import { FlightsFilters, FlightsSortBy } from '@/_types';
-import router, { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ComponentProps,
   createContext,

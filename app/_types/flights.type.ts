@@ -1,5 +1,5 @@
-import { flightsSearchBookmark } from "@/_lib/schema";
-import { flightsSearchSchema } from "@/flights/_components/FlightsSearch";
+import { flightBookmark, flightsSearchBookmark } from "@/_lib/schema";
+import { flightsSearchSchema } from "@/flights/_providers/FlightsSearchProvider";
 import { InferSelectModel } from "drizzle-orm";
 import z from "zod";
 
@@ -44,4 +44,5 @@ export interface FlightsFilters {
     sort: { by: FlightsSortBy; order: 'asc' | 'desc' };
 }
 
-export type BookmarkFlightsSearch = InferSelectModel<typeof flightsSearchBookmark>;
+export type FlightsSearchBookmark = InferSelectModel<typeof flightsSearchBookmark>;
+export type FlightBookmark = InferSelectModel<typeof flightBookmark>;

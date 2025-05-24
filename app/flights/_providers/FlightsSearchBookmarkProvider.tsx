@@ -1,29 +1,32 @@
 'use client';
 
 import { sendRequest } from '@/_lib/http-utils';
-import { toSearchParams } from '@/_lib/navigation-utils';
-import { BookmarkFlightsSearch, FlightsSearch } from '@/_types';
+import { toSearchParams } from '@/_lib/url-utils';
+import { FlightsSearch, FlightsSearchBookmark } from '@/_types';
 import { useAuth } from '@/auth/_providers/AuthProvider';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatISO } from 'date-fns';
 import { createContext, use, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 
-interface FlightsBookmarkContextType {
+interface FlightsSearchBookmarkContextType {
   toggleBookmark: (bookmark: FlightsSearch, isBookmarked: boolean) => void;
   flightsSearchBookmarkMap: Record<
-    BookmarkFlightsSearch['searchParams'],
-    BookmarkFlightsSearch
+    FlightsSearchBookmark['searchParams'],
+    FlightsSearchBookmark
   >;
   isFlightsSearchBookmarkMapLoading: boolean;
-  isFlightsSearchBookmarking: boolean;
+  isFlightsSearchBookmarkPending: boolean;
 }
 
-const FlightsBookmarkContext = createContext<FlightsBookmarkContextType | null>(
-  null
-);
+const FlightsSearchBookmarkContext =
+  createContext<FlightsSearchBookmarkContextType | null>(null);
 
-function FlightsBookmarkProvider({ children }: { children: React.ReactNode }) {
+function FlightsSearchBookmarkProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { ensureSignedIn, isSignedIn, isAuthPending } = useAuth();
   const departureAt = formatISO(new Date(), { representation: 'date' });
   const queryClient = useQueryClient();
@@ -31,7 +34,7 @@ function FlightsBookmarkProvider({ children }: { children: React.ReactNode }) {
   const flightsSearchBookmarkQuery = useQuery({
     queryKey: ['bookmarks', 'flights-search', departureAt],
     queryFn: () =>
-      sendRequest<BookmarkFlightsSearch[]>(
+      sendRequest<FlightsSearchBookmark[]>(
         `/api/me/bookmarks?departureAt=${departureAt}`
       ),
     enabled: !isAuthPending && isSignedIn,
@@ -46,13 +49,13 @@ function FlightsBookmarkProvider({ children }: { children: React.ReactNode }) {
         acc[bookmark.searchParams] = bookmark;
         return acc;
       },
-      {} as Record<BookmarkFlightsSearch['searchParams'], BookmarkFlightsSearch>
+      {} as Record<FlightsSearchBookmark['searchParams'], FlightsSearchBookmark>
     );
   }, [flightsSearchBookmarkQuery.data]);
 
   const createBookmarkFlightsSearchMutation = useMutation({
     mutationFn: (bookmark: FlightsSearch) =>
-      sendRequest<BookmarkFlightsSearch>('/api/me/bookmarks', {
+      sendRequest<FlightsSearchBookmark>('/api/me/bookmarks', {
         method: 'POST',
         body: JSON.stringify({
           searchParams: toSearchParams(bookmark),
@@ -65,12 +68,12 @@ function FlightsBookmarkProvider({ children }: { children: React.ReactNode }) {
       });
 
       const previousBookmarks = queryClient.getQueryData<
-        BookmarkFlightsSearch[]
+        FlightsSearchBookmark[]
       >(['bookmarks', 'flights-search', departureAt]);
 
       queryClient.setQueryData(
         ['bookmarks', 'flights-search', departureAt],
-        (old: BookmarkFlightsSearch[]) => [
+        (old: FlightsSearchBookmark[]) => [
           ...(old || []),
           { searchParams: toSearchParams(bookmark), departureAt },
         ]
@@ -95,7 +98,7 @@ function FlightsBookmarkProvider({ children }: { children: React.ReactNode }) {
 
   const deleteBookmarkFlightsSearchMutation = useMutation({
     mutationFn: (bookmarkId: string) =>
-      sendRequest(`/api/me/bookmarks/${bookmarkId}`, {
+      sendRequest(`/api/me/bookmarks/${bookmarkId}?mode=flights-search`, {
         method: 'DELETE',
       }),
     onMutate: async (bookmarkId) => {
@@ -104,12 +107,12 @@ function FlightsBookmarkProvider({ children }: { children: React.ReactNode }) {
       });
 
       const previousBookmarks = queryClient.getQueryData<
-        BookmarkFlightsSearch[]
+        FlightsSearchBookmark[]
       >(['bookmarks', 'flights-search', departureAt]);
 
       queryClient.setQueryData(
         ['bookmarks', 'flights-search', departureAt],
-        (old: BookmarkFlightsSearch[]) =>
+        (old: FlightsSearchBookmark[]) =>
           (old || []).filter((bookmark) => bookmark.id !== bookmarkId)
       );
 
@@ -126,45 +129,41 @@ function FlightsBookmarkProvider({ children }: { children: React.ReactNode }) {
 
   const toggleBookmark = useCallback(
     async (bookmark: FlightsSearch, isBookmarked: boolean) => {
-      ensureSignedIn(async () => {
-        try {
-          isBookmarked
-            ? deleteBookmarkFlightsSearchMutation.mutate(
-                flightsSearchBookmarkMap[toSearchParams(bookmark)].id
-              )
-            : createBookmarkFlightsSearchMutation.mutate(bookmark);
-        } catch (error) {
-          toast.error((error as Error).message);
-        }
+      ensureSignedIn(() => {
+        isBookmarked
+          ? deleteBookmarkFlightsSearchMutation.mutate(
+              flightsSearchBookmarkMap[toSearchParams(bookmark)].id
+            )
+          : createBookmarkFlightsSearchMutation.mutate(bookmark);
       }, 'You must be signed in to bookmark flights');
     },
     [ensureSignedIn, flightsSearchBookmarkMap]
   );
 
   return (
-    <FlightsBookmarkContext
+    <FlightsSearchBookmarkContext
       value={{
         toggleBookmark,
         flightsSearchBookmarkMap,
         isFlightsSearchBookmarkMapLoading:
           !flightsSearchBookmarkMap || flightsSearchBookmarkQuery.isLoading,
-        isFlightsSearchBookmarking:
+        isFlightsSearchBookmarkPending:
           createBookmarkFlightsSearchMutation.isPending ||
           deleteBookmarkFlightsSearchMutation.isPending,
       }}
     >
       {children}
-    </FlightsBookmarkContext>
+    </FlightsSearchBookmarkContext>
   );
 }
 
-export default FlightsBookmarkProvider;
+export default FlightsSearchBookmarkProvider;
 
-export function useFlightsBookmark() {
-  const context = use(FlightsBookmarkContext);
+export function useFlightsSearchBookmark() {
+  const context = use(FlightsSearchBookmarkContext);
   if (!context) {
     throw new Error(
-      'useFlightsBookmark must be used within a FlightsBookmarkProvider'
+      'useFlightsBookmark must be used within a FlightsSearchBookmarkProvider'
     );
   }
 

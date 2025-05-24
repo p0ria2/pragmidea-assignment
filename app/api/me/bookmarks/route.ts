@@ -26,12 +26,16 @@ const POSTSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-    const { searchParams, departureAt } = POSTSchema.parse(await req.json());
+    const parsedBody = POSTSchema.safeParse(await req.json());
     const { user } = (await getServerSession())!;
 
+    if (!parsedBody.success) {
+        return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+
     try {
-        const bookmarkFlightsSearch = await bookmarkRepository.addBookmarkFlightsSearch(user.id, searchParams, departureAt);
-        return NextResponse.json(bookmarkFlightsSearch[0]);
+        const bookmarkFlightsSearch = await bookmarkRepository.addBookmarkFlightsSearch(user.id, parsedBody.data.searchParams, parsedBody.data.departureAt);
+        return NextResponse.json(bookmarkFlightsSearch);
     } catch (error) {
         if ((error as DbError).code === DbErrorCodes.Duplicate) {
             return NextResponse.json({ message: "Bookmark already exists" }, { status: 409 });

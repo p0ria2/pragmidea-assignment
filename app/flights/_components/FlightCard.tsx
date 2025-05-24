@@ -1,6 +1,11 @@
+'use client';
+
 import { Button } from '@/_components';
-import { Flight } from '@/_types';
+import { cn } from '@/_lib/css-utils';
+import { Flight, FlightBookmark } from '@/_types';
 import { format, parseISO } from 'date-fns';
+import { BookmarkIcon } from 'lucide-react';
+import { useSearchedFlightsBookmark } from '../_providers/SearchedFlightsBookmarkProvider';
 
 interface Props {
   flight: Flight;
@@ -9,9 +14,34 @@ interface Props {
 export default function FlightCard({ flight }: Props) {
   const departureDate = parseISO(flight.departure.at);
   const arrivalDate = parseISO(flight.arrival.at);
+  const {
+    toggleBookmark,
+    searchedFlightsBookmarkMap,
+    isSearchedFlightsBookmarkMapLoading,
+    isSearchedFlightsBookmarkPending,
+  } = useSearchedFlightsBookmark();
+  const bookmark = searchedFlightsBookmarkMap?.[flight.id] as
+    | FlightBookmark
+    | undefined;
+  const isBookmarked = !!bookmark;
+
+  const handleToggleBookmark = () => {
+    toggleBookmark(
+      isBookmarked
+        ? {
+            isBookmarked,
+            bookmarkId: bookmark!.id,
+            flightId: flight.id,
+          }
+        : {
+            isBookmarked,
+            flight,
+          }
+    );
+  };
 
   return (
-    <div className="bg-primary/80 text-primary-foreground flex gap-4 rounded-lg border p-4 shadow">
+    <div className="bg-primary/80 text-primary-foreground relative flex gap-4 rounded-lg border p-4 shadow">
       <div className="flex flex-1 justify-between gap-6 border-r border-dashed pr-10 pl-4">
         <div className="flex flex-col gap-1">
           <span className="text-xs opacity-70">
@@ -56,6 +86,25 @@ export default function FlightCard({ flight }: Props) {
         </span>
         <Button variant="secondary">Select</Button>
       </div>
+
+      <Button
+        className="absolute top-1 right-1 cursor-pointer rounded-full"
+        variant="link"
+        size="icon"
+        type="button"
+        disabled={
+          isSearchedFlightsBookmarkMapLoading ||
+          isSearchedFlightsBookmarkPending[flight.id]
+        }
+        onClick={handleToggleBookmark}
+      >
+        <BookmarkIcon
+          className={cn({
+            'fill-yellow-400 text-yellow-500': isBookmarked,
+            'fill-white text-white': !isBookmarked,
+          })}
+        />
+      </Button>
     </div>
   );
 }

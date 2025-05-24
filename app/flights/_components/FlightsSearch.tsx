@@ -19,11 +19,11 @@ import AirportSearch from './AirportSearch';
 import FlightDateSearch from './FlightDateSearch';
 import PassengerSearch from './PassengerSearch';
 import { BookmarkIcon } from 'lucide-react';
-import { useFlightsBookmark } from '../_providers/FlightsBookmarkProvider';
+import { useFlightsSearchBookmark } from '../_providers/FlightsSearchBookmarkProvider';
 import { cn } from '@/_lib/css-utils';
-import { toSearchParams } from '@/_lib/navigation-utils';
+import { toSearchParams } from '@/_lib/url-utils';
 
-export const flightsSearchSchema = z.object({
+export const flightsSearchSchemaBase = z.object({
   originLocationCode: z.string().length(3, { message: 'From is required' }),
   destinationLocationCode: z.string().length(3, { message: 'To is required' }),
   adults: z.number().min(1),
@@ -33,7 +33,7 @@ export const flightsSearchSchema = z.object({
   returnDate: z.string().optional(),
 });
 
-const formSchema = flightsSearchSchema
+const formSchema = flightsSearchSchemaBase
   .refine((data) => data.originLocationCode !== data.destinationLocationCode, {
     path: ['destinationLocationCode'],
     message: 'Origin and destination cannot be the same',
@@ -97,12 +97,12 @@ export default function FlightsSearch() {
     toggleBookmark,
     flightsSearchBookmarkMap: bookmarkFlightsSearchMap,
     isFlightsSearchBookmarkMapLoading,
-    isFlightsSearchBookmarking,
-  } = useFlightsBookmark();
-  const flightsSearchBookmark = useMemo(() => {
+    isFlightsSearchBookmarkPending,
+  } = useFlightsSearchBookmark();
+  const bookmark = useMemo(() => {
     return bookmarkFlightsSearchMap?.[toSearchParams(form.getValues())];
   }, [bookmarkFlightsSearchMap, form.formState.isValid, form.watch()]);
-  const isBookmarked = !!flightsSearchBookmark;
+  const isBookmarked = !!bookmark;
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     onSearchChange(values);
@@ -140,7 +140,7 @@ export default function FlightsSearch() {
                 disabled={
                   !form.formState.isValid ||
                   isFlightsSearchBookmarkMapLoading ||
-                  isFlightsSearchBookmarking
+                  isFlightsSearchBookmarkPending
                 }
                 onClick={onToggleBookmark}
               >

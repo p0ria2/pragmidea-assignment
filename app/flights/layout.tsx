@@ -1,7 +1,8 @@
 import AirportsProvider from './_providers/AirportsProvider';
-import FlightsBookmarkProvider from './_providers/FlightsBookmarkProvider';
+import FlightsSearchBookmarkProvider from './_providers/FlightsSearchBookmarkProvider';
 import FlightsFiltersProvider from './_providers/FlightsFiltersProvider';
 import FlightsSearchProvider from './_providers/FlightsSearchProvider';
+import SearchedFlightsBookmarkProvider from './_providers/SearchedFlightsBookmarkProvider';
 
 export default function FlightsLayout({
   children,
@@ -9,13 +10,17 @@ export default function FlightsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <FlightsSearchProvider>
-      <FlightsFiltersProvider>
-        <FlightsBookmarkProvider>
-          <AirportsProvider>{children}</AirportsProvider>
-        </FlightsBookmarkProvider>
-      </FlightsFiltersProvider>
-    </FlightsSearchProvider>
+    <AirportsProvider>
+      <FlightsSearchProvider>
+        <FlightsFiltersProvider>
+          <FlightsSearchBookmarkProvider>
+            <SearchedFlightsBookmarkProvider>
+              {children}
+            </SearchedFlightsBookmarkProvider>
+          </FlightsSearchBookmarkProvider>
+        </FlightsFiltersProvider>
+      </FlightsSearchProvider>
+    </AirportsProvider>
   );
 }
 

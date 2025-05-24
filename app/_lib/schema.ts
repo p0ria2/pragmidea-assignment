@@ -78,5 +78,5 @@ export const flightBookmark = pgTable("flight_bookmark", {
 }, (table) => [
     index("flight_bookmark_user_id_idx").on(table.userId),
     index("flight_bookmark_search_params_idx").on(table.searchParams),
-    index("flight_bookmark_departure_at_idx").on(table.departureAt)
+    unique("flight_bookmark_user_id_search_params_unique_ex_id").on(table.userId, table.searchParams, table.exId)
 ]);

@@ -1,8 +1,6 @@
 'use client';
 
-import { sendRequest } from '@/_lib/http-utils';
-import { toSearchParams } from '@/_lib/navigation-utils';
-import { parseUrlSearchParams } from '@/_lib/url-utils';
+import { parseUrlSearchParams, toSearchParams } from '@/_lib/url-utils';
 import type { FlightsSearch } from '@/_types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -17,9 +15,8 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { toast } from 'sonner';
 import z from 'zod';
-import { flightsSearchSchema } from '../_components/FlightsSearch';
+import { flightsSearchSchemaBase } from '../_components/FlightsSearch';
 
 interface FlightsSearchContextType {
   search: FlightsSearch;
@@ -33,7 +30,7 @@ const FlightsSearchContext = createContext<FlightsSearchContextType | null>(
   null
 );
 
-const FlightsSearchSchema = flightsSearchSchema.extend({
+export const flightsSearchSchema = flightsSearchSchemaBase.extend({
   adults: z.coerce.number().min(1),
   children: z.coerce.number().min(0),
   infants: z.coerce.number().min(0),
@@ -50,7 +47,7 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
     returnDate: undefined,
   });
   const isSearchValid = useMemo(() => {
-    return FlightsSearchSchema.safeParse(search).success;
+    return flightsSearchSchema.safeParse(search).success;
   }, [search]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -61,7 +58,7 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
   >(
     (search) => {
       const preSearchParams = Object.fromEntries(searchParams.entries());
-      router.replace(
+      router.push(
         `/flights?${toSearchParams({ ...preSearchParams, ...search })}`
       );
     },
@@ -69,7 +66,7 @@ function FlightsSearchProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-    const params = parseUrlSearchParams(searchParams, FlightsSearchSchema);
+    const params = parseUrlSearchParams(searchParams, flightsSearchSchema);
     if (params) {
       setSearch(params);
     }

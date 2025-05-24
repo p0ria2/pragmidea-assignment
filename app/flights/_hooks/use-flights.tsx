@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
-import { toSearchParams } from '@/_lib/navigation-utils';
+import { toSearchParams } from '@/_lib/url-utils';
 import { Flight } from '@/_types';
 import { useEffect } from 'react';
 import { sendRequest } from '@/_lib/http-utils';

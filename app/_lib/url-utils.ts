@@ -6,3 +6,10 @@ export function parseUrlSearchParams<T extends z.ZodTypeAny>(searchParams: Reado
     const parsed = schema.safeParse(Object.fromEntries(params.entries()));
     return parsed.success ? parsed.data : null;
 }
+
+export function toSearchParams(values: Record<string, any>) {
+    return Object.entries(values || {})
+        .filter(([_, value]) => value !== null && value !== undefined && value !== '')
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+}
