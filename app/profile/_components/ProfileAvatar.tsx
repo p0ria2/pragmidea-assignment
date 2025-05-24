@@ -8,18 +8,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/_components';
-import { signOut } from '@/_lib/auth-client';
 import { initials } from '@/_lib/string-utils';
 import { useAuth } from '@/auth/_providers/AuthProvider';
-import { User } from 'better-auth';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function ProfileAvatar() {
-  const { isSignedIn, isAuthPending, openSignIn, user } = useAuth();
+  const { isSignedIn, isAuthPending, openSignIn } = useAuth();
 
   return isSignedIn ? (
-    <ProfilePopover user={user!} />
+    <ProfilePopover />
   ) : (
     <Button
       className="text-primary-foreground cursor-pointer"
@@ -32,9 +31,11 @@ export default function ProfileAvatar() {
   );
 }
 
-export function ProfilePopover({ user }: { user: User }) {
+export function ProfilePopover() {
+  const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+
   const handleSignOut = async () => {
     await signOut({
       fetchOptions: {

@@ -95,12 +95,14 @@ export default function FlightsSearch() {
   const { onSearchChange } = useFlightsSearch();
   const {
     toggleBookmark,
-    bookmarkFlightsSearchMap,
-    isBookmarkFlightsSearchMapLoading,
+    flightsSearchBookmarkMap: bookmarkFlightsSearchMap,
+    isFlightsSearchBookmarkMapLoading,
+    isFlightsSearchBookmarking,
   } = useFlightsBookmark();
-  const isBookmarked =
-    form.formState.isValid &&
-    !!bookmarkFlightsSearchMap[toSearchParams(form.getValues())];
+  const flightsSearchBookmark = useMemo(() => {
+    return bookmarkFlightsSearchMap?.[toSearchParams(form.getValues())];
+  }, [bookmarkFlightsSearchMap, form.formState.isValid, form.watch()]);
+  const isBookmarked = !!flightsSearchBookmark;
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     onSearchChange(values);
@@ -116,7 +118,7 @@ export default function FlightsSearch() {
 
   return (
     <div className="px-4 pt-2">
-      <div className="rounded border bg-white p-4 shadow">
+      <div className="rounded border p-4 shadow">
         <Form {...form}>
           <form
             className="grid grid-cols-1 gap-4 md:grid-cols-2"
@@ -136,7 +138,9 @@ export default function FlightsSearch() {
                 size="icon"
                 type="button"
                 disabled={
-                  !form.formState.isValid || isBookmarkFlightsSearchMapLoading
+                  !form.formState.isValid ||
+                  isFlightsSearchBookmarkMapLoading ||
+                  isFlightsSearchBookmarking
                 }
                 onClick={onToggleBookmark}
               >

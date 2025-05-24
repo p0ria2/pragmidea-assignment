@@ -15,7 +15,7 @@ import {
   Input,
   LoadingButton,
 } from '@/_components';
-import { signIn, signUp } from '@/_lib/auth-client';
+import { signIn } from '@/_lib/auth-client';
 import { cn } from '@/_lib/css-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Mail } from 'lucide-react';
@@ -29,7 +29,8 @@ const MIN_PASSWORD_LENGTH = Number(process.env.NEXT_PUBLIC_MIN_PASS_LEN);
 type Provider = 'email' | Parameters<typeof signIn.social>[0]['provider'];
 
 export default function SignIn() {
-  const { isSignInOpen, openSignIn } = useAuth();
+  const { isSignInOpen, openSignIn, signUpEmail, signInEmail, signInSocial } =
+    useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
   const [isPending, setIsPending] = useState<
@@ -37,6 +38,7 @@ export default function SignIn() {
   >({
     email: false,
   });
+
   const formSchema = z.object({
     email: z.string().email(),
     password: z.string().refine(
@@ -50,6 +52,7 @@ export default function SignIn() {
       }
     ),
   });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,7 +70,7 @@ export default function SignIn() {
   };
 
   const onSubmitCallback = useMemo<
-    (provider: Provider) => Parameters<typeof signIn.email>[1]
+    (provider: Provider) => Parameters<typeof signIn.email>[0]['fetchOptions']
   >(
     () => (provider) => ({
       onRequest: () => {
@@ -89,17 +92,15 @@ export default function SignIn() {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isRegister) {
-      signUp.email(
+      signUpEmail(
         {
           email: values.email,
           password: values.password,
-          name: values.email,
-          callbackURL: '/',
         },
         onSubmitCallback('email')
       );
     } else {
-      signIn.email(
+      signInEmail(
         {
           email: values.email,
           password: values.password,
@@ -110,14 +111,7 @@ export default function SignIn() {
   };
 
   const handleSignInWithSocial = (provider: Exclude<Provider, 'email'>) => {
-    setIsPending({ ...isPending, [provider]: true });
-    signIn.social(
-      {
-        provider,
-        callbackURL: '/',
-      },
-      onSubmitCallback(provider)
-    );
+    signInSocial(provider, onSubmitCallback(provider));
   };
 
   return (
@@ -145,7 +139,12 @@ export default function SignIn() {
                       'border-red-500': form.formState.errors.email,
                     })}
                   >
-                    <Input {...field} endIcon={<Mail />} autoFocus />
+                    <Input
+                      {...field}
+                      autoComplete="email"
+                      endIcon={<Mail />}
+                      autoFocus
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -165,6 +164,7 @@ export default function SignIn() {
                     <Input
                       {...field}
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete="current-password"
                       endIcon={
                         <PasswordIcon
                           onClick={() => setShowPassword(!showPassword)}
@@ -181,6 +181,9 @@ export default function SignIn() {
             <LoadingButton
               className="mt-2 mb-4 w-full cursor-pointer"
               type="submit"
+              disabled={Object.entries(isPending)
+                .filter(([k, v]) => k != 'email')
+                .some(([, v]) => v)}
               isLoading={isPending.email}
             >
               {isRegister ? 'Register' : 'Sign in'}
