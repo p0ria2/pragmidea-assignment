@@ -2,7 +2,72 @@ import test, { expect } from "@playwright/test";
 import { format, getDate } from "date-fns";
 
 test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:3000/flights");
+    await page.goto("/flights");
+
+    await page.route('**/api/flights?**', async (route) => {
+        const json =
+            [
+                {
+                    id: "1",
+                    duration: "16:50",
+                    airline: "OMAN AIR",
+                    departure: {
+                        at: "2025-05-25T22:45:00",
+                        iata: "IKA"
+                    },
+                    arrival: {
+                        at: "2025-05-26T20:05:00",
+                        iata: "KUL"
+                    },
+                    stops: [
+                        "DOH",
+                    ],
+                    price: "530.22",
+                    currency: "EUR"
+                },
+                {
+                    id: "2",
+                    duration: "00:50",
+                    airline: "OMAN AIR",
+                    departure: {
+                        at: "2025-05-25T20:45:00",
+                        iata: "IKA"
+                    },
+                    arrival: {
+                        at: "2025-05-27T20:05:00",
+                        iata: "KUL"
+                    },
+                    stops: [
+                        "DOH",
+                        "MCT"
+                    ],
+                    price: "430.22",
+                    currency: "EUR"
+                },
+                {
+                    "id": "3",
+                    "duration": "40:50",
+                    "airline": "OMAN AIR",
+                    departure: {
+                        at: "2025-05-25T23:45:00",
+                        iata: "IKA"
+                    },
+                    arrival: {
+                        at: "2025-05-27T20:05:00",
+                        iata: "KUL"
+                    },
+                    stops: [
+                        "DOH",
+                        "MCT",
+                        "ABU"
+                    ],
+                    price: "532.56",
+                    currency: "EUR"
+                },
+            ];
+
+        await route.fulfill({ json });
+    });
 });
 
 test("should have search button", async ({ page }) => {
@@ -71,3 +136,28 @@ test("return date should be after departure date", async ({ page }) => {
     await page.waitForTimeout(100);
     await expect(page.getByText('Return date must be after departure date')).toBeVisible();
 });
+
+test("should be able to search flights", async ({ page }) => {
+    await page.getByRole('button', { name: 'From Select Airport' }).click();
+    await page.getByPlaceholder('Search...').fill('IKA');
+    await page.getByText(/IKA - /).click();
+    await page.waitForTimeout(200);
+
+    await page.getByRole('button', { name: 'To Select Airport' }).click();
+    await page.getByPlaceholder('Search...').fill('KUL');
+    await page.getByText(/KUL - /).click();
+    await page.waitForTimeout(200);
+
+    const today = new Date();
+    await page.getByRole('button', { name: 'Departure' }).click();
+    await page.getByText(`${getDate(today)}`, { exact: true }).click();
+    await page.waitForTimeout(200);
+
+    await page.getByRole('button', { name: 'Search' }).click();
+    await expect(page.locator('[data-testid="spinner"]')).toBeHidden();
+
+    await page.waitForRequest('**/api/flights?**');
+
+    await page.waitForTimeout(100);
+    await expect((await page.getByText("OMAN AIR").all()).length).toBeGreaterThan(0);
+})
