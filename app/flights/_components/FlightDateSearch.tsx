@@ -6,7 +6,6 @@ import {
   PopoverTrigger,
 } from '@/_components';
 import { cn } from '@/_lib/css-utils';
-import { PopoverAnchor } from '@radix-ui/react-popover';
 import { format, formatISO, parseISO } from 'date-fns';
 import { CalendarIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -70,6 +69,7 @@ export default function FlightDateSearch({
         <PopoverContent className="overflow-hidden p-0">
           <Calendar
             className="border-none!"
+            locale="en-US"
             value={value ? parseISO(value) : null}
             onChange={handleChange as any}
             minDate={minDate}

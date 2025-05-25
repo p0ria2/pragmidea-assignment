@@ -7,7 +7,7 @@ import { Flight } from '@/_types';
 import { useEffect } from 'react';
 import { sendRequest } from '@/_lib/http-utils';
 import { toast } from 'sonner';
-import { isAfter, startOfDay } from 'date-fns';
+import { format, isAfter, isSameDay, parseISO, startOfDay } from 'date-fns';
 
 export default function useFlights() {
   const { search, isSearchValid, setIsSubmitting } = useFlightsSearch();
@@ -22,9 +22,9 @@ export default function useFlights() {
 
         return response.filter(
           (flight) =>
-            startOfDay(flight.departure.at) ===
-              startOfDay(search.departureDate) &&
-            isAfter(flight.departure.at, new Date())
+            format(startOfDay(parseISO(flight.departure.at)), 'yyyy-MM-dd') ==
+              search.departureDate &&
+            isAfter(parseISO(flight.departure.at), new Date())
         );
       } catch (error) {
         toast.error('Failed to fetch flights');
