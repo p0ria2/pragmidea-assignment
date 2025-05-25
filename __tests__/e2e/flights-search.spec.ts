@@ -32,7 +32,7 @@ test("search without return date works", async ({ page }) => {
 test("should be able to select departure iata", async ({ page }) => {
     await page.getByRole('button', { name: 'From' }).click();
     await page.getByPlaceholder('Search...').fill('LAX');
-    await page.getByText(/LAX - Los Angeles International Airport/).click();
+    await page.getByText(/LAX - /).click();
     await expect(page.getByRole('button', { name: /LAX - Los Angeles International Airport/ })).toBeVisible();
 });
 
@@ -46,14 +46,14 @@ test("should be able to select destination iata", async ({ page }) => {
 test("should be able to select departure date", async ({ page }) => {
     const today = new Date();
     await page.getByRole('button', { name: 'Departure' }).click();
-    await page.getByText(`${getDate(today)}`).click();
+    await page.getByText(`${getDate(today)}`, { exact: true }).click();
     await expect(page.getByRole('button', { name: format(today, 'EEE, dd MMM') })).toBeVisible();
 });
 
 test("should be able to select return date", async ({ page }) => {
     const today = new Date();
     await page.getByRole('button', { name: 'Return' }).click();
-    await page.getByText(`${getDate(today)}`).click();
+    await page.getByText(`${getDate(today)}`, { exact: true }).click();
     await expect(page.getByRole('button', { name: format(today, 'EEE, dd MMM') })).toBeVisible();
 });
 
@@ -61,11 +61,11 @@ test("return date should be after departure date", async ({ page }) => {
     const today = new Date();
     await page.getByRole('button', { name: 'Return' }).click();
     await page.waitForTimeout(100);
-    await page.getByText(`${getDate(today)}`).click();
+    await page.getByText(`${getDate(today)}`, { exact: true }).click();
     await page.waitForTimeout(100);
     await page.getByRole('button', { name: 'Departure' }).click();
     await page.waitForTimeout(100);
-    await page.getByText(`${getDate(today.setDate(today.getDate() + 1))}`).click();
+    await page.getByText(`${getDate(today.setDate(today.getDate() + 1))}`, { exact: true }).click();
     await page.waitForTimeout(100);
     await page.getByRole('button', { name: 'Search' }).click();
     await page.waitForTimeout(100);

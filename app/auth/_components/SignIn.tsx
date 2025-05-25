@@ -24,9 +24,15 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 import { useAuth } from '../_providers/AuthProvider';
+import { capitalize } from '@/_lib/string-utils';
+
+type Provider = 'email' | Parameters<typeof signIn.social>[0]['provider'];
+type SocialProvider = Exclude<Provider, 'email'>;
 
 const MIN_PASSWORD_LENGTH = Number(process.env.NEXT_PUBLIC_MIN_PASS_LEN);
-type Provider = 'email' | Parameters<typeof signIn.social>[0]['provider'];
+const PROVIDERS = process.env.NEXT_PUBLIC_SOCIAL_AUTH_PROVIDERS?.split(
+  ','
+) as SocialProvider[];
 
 export default function SignIn() {
   const { isSignInOpen, openSignIn, signUpEmail, signInEmail, signInSocial } =
@@ -110,7 +116,7 @@ export default function SignIn() {
     }
   };
 
-  const handleSignInWithSocial = (provider: Exclude<Provider, 'email'>) => {
+  const handleSignInWithSocial = (provider: SocialProvider) => {
     signInSocial(provider, onSubmitCallback(provider));
   };
 
@@ -181,9 +187,6 @@ export default function SignIn() {
             <LoadingButton
               className="mt-2 mb-4 w-full cursor-pointer"
               type="submit"
-              disabled={Object.entries(isPending)
-                .filter(([k, v]) => k != 'email')
-                .some(([, v]) => v)}
               isLoading={isPending.email}
             >
               {isRegister ? 'Register' : 'Sign in'}
@@ -210,15 +213,17 @@ export default function SignIn() {
                 <div className="bg-border h-px w-full"></div>
               </div>
 
-              <LoadingButton
-                className="w-full cursor-pointer bg-black hover:bg-blue-500"
-                type="submit"
-                disabled={isPending.email}
-                isLoading={isPending.google}
-                onClick={() => handleSignInWithSocial('google')}
-              >
-                Sign in with Google
-              </LoadingButton>
+              {PROVIDERS?.map((provider) => (
+                <LoadingButton
+                  key={provider}
+                  className="w-full cursor-pointer bg-black hover:bg-blue-500"
+                  type="submit"
+                  isLoading={isPending[provider]}
+                  onClick={() => handleSignInWithSocial(provider)}
+                >
+                  Sign in with {capitalize(provider)}
+                </LoadingButton>
+              ))}
             </>
           )}
         </Form>

@@ -1,13 +1,13 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
+import { sendRequest } from '@/_lib/http-utils';
 import { toSearchParams } from '@/_lib/url-utils';
 import { Flight } from '@/_types';
+import { useQuery } from '@tanstack/react-query';
+import { format, isAfter, parseISO, startOfDay } from 'date-fns';
 import { useEffect } from 'react';
-import { sendRequest } from '@/_lib/http-utils';
 import { toast } from 'sonner';
-import { format, isAfter, isSameDay, parseISO, startOfDay } from 'date-fns';
+import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
 
 export default function useFlights() {
   const { search, isSearchValid, setIsSubmitting } = useFlightsSearch();
