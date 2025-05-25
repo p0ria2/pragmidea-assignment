@@ -66,7 +66,10 @@ export default function FlightDateSearch({
           />
         )}
 
-        <PopoverContent className="overflow-hidden p-0">
+        <PopoverContent
+          className="overflow-hidden p-0"
+          data-testid="flight-date-search-popover"
+        >
           <Calendar
             className="border-none!"
             locale="en-US"

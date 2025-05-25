@@ -121,7 +121,18 @@ export default function SignIn() {
   };
 
   return (
-    <Dialog open={isSignInOpen} onOpenChange={openSignIn}>
+    <Dialog
+      open={isSignInOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          setTimeout(() => {
+            form.reset();
+            setIsRegister(false);
+          }, 200);
+        }
+        openSignIn(open);
+      }}
+    >
       <DialogContent className="max-w-[400px]!">
         <DialogHeader>
           <DialogTitle>{isRegister ? 'Register' : 'Sign in'}</DialogTitle>

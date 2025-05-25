@@ -149,6 +149,7 @@ export default function FlightsSearch() {
                   isFlightsSearchBookmarkPending
                 }
                 onClick={handleToggleBookmark}
+                data-testid="flights-search-bookmark-button"
               >
                 <BookmarkIcon
                   className={cn({

@@ -81,7 +81,6 @@ export default function AuthProvider({
       authSignUp.email({
         ...credentials,
         name: credentials.email,
-        callbackURL: window?.location.href || '/',
         fetchOptions: {
           ...(fetchOptions || {}),
           onRequest: (ctx) => {

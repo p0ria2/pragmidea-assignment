@@ -91,7 +91,7 @@ export default function AirportSearch({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent>
+      <PopoverContent data-testid="airport-search-popover">
         <div className="mb-1 flex items-center border-b px-2">
           <SearchIcon className="size-4" />
           <Input

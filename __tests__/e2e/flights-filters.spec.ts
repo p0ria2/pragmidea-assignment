@@ -6,6 +6,9 @@ test.describe('Flights Filters', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto("/flights");
 
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowDate = tomorrow.toISOString().split('T')[0];
         await page.route('**/api/flights?**', async (route) => {
             const json =
                 [
@@ -14,7 +17,7 @@ test.describe('Flights Filters', () => {
                         duration: "16:50",
                         airline: "OMAN AIR",
                         departure: {
-                            at: "2025-05-25T22:45:00",
+                            at: `${tomorrowDate}T22:45:00`,
                             iata: "IKA"
                         },
                         arrival: {
@@ -32,7 +35,7 @@ test.describe('Flights Filters', () => {
                         duration: "00:50",
                         airline: "OMAN AIR",
                         departure: {
-                            at: "2025-05-25T20:45:00",
+                            at: `${tomorrowDate}T20:45:00`,
                             iata: "IKA"
                         },
                         arrival: {
@@ -51,7 +54,7 @@ test.describe('Flights Filters', () => {
                         "duration": "40:50",
                         "airline": "OMAN AIR",
                         departure: {
-                            at: "2025-05-25T23:45:00",
+                            at: `${tomorrowDate}T23:45:00`,
                             iata: "IKA"
                         },
                         arrival: {
@@ -74,25 +77,25 @@ test.describe('Flights Filters', () => {
         await page.getByRole('button', { name: 'From Select Airport' }).click();
         await page.getByPlaceholder('Search...').fill('IKA');
         await page.getByText(/IKA - /).click();
-        await page.waitForTimeout(200);
+        await expect(page.getByTestId('airport-search-popover')).toBeHidden();
 
         await page.getByRole('button', { name: 'To Select Airport' }).click();
         await page.getByPlaceholder('Search...').fill('KUL');
         await page.getByText(/KUL - /).click();
-        await page.waitForTimeout(200);
+        await expect(page.getByTestId('airport-search-popover')).toBeHidden();
 
-        const today = new Date();
         await page.getByRole('button', { name: 'Departure' }).click();
-        await page.getByText(`${getDate(today)}`, { exact: true }).click();
-        await page.waitForTimeout(200);
+        await page.getByText(`${getDate(tomorrow)}`, { exact: true }).click();
+        await expect(page.getByTestId('flight-date-search-popover')).toBeHidden();
 
         await page.getByRole('button', { name: 'Search' }).click();
         await expect(page.locator('[data-testid="spinner"]')).toBeHidden();
+        await page.waitForResponse(response => response.url().includes('/api/flights'));
 
         await page.waitForLoadState('networkidle');
         await page.waitForLoadState('load');
         await page.waitForLoadState('domcontentloaded');
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(200);
     });
 
     test("should have filter button", async ({ page }) => {
