@@ -1,9 +1,10 @@
 'use client';
 
 import VirtualList, { VirtualListRef } from '@/_components/VirtualList';
-import useInfiniteFlights from '../_hooks/use-infinite-flights';
-import { useEffect, useRef } from 'react';
 import { PlaneTakeoff } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import useInfiniteFlights from '../_hooks/use-infinite-flights';
+import { useSearchedFlightsBookmark } from '../_providers/SearchedFlightsBookmarkProvider';
 import FlightCard from './FlightCard';
 
 export default function FlightsList() {
@@ -12,6 +13,13 @@ export default function FlightsList() {
       limit: 10,
     });
   const virtualizedListRef = useRef<VirtualListRef>(null);
+
+  const {
+    toggleBookmark,
+    searchedFlightsBookmarkMap,
+    isSearchedFlightsBookmarkMapLoading,
+    isSearchedFlightsBookmarkPending,
+  } = useSearchedFlightsBookmark();
 
   useEffect(() => {
     if (!isLoading) {
@@ -34,9 +42,36 @@ export default function FlightsList() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {data.map((flight) => (
-            <FlightCard key={flight.id} flight={flight} />
-          ))}
+          {data.map((flight) => {
+            const bookmark = searchedFlightsBookmarkMap?.[flight.id];
+            const isBookmarked = !!bookmark;
+
+            return (
+              <FlightCard
+                key={flight.id}
+                flight={flight}
+                bookmark={bookmark}
+                bookmarkDisabled={
+                  isSearchedFlightsBookmarkMapLoading ||
+                  isSearchedFlightsBookmarkPending[flight.id]
+                }
+                onToggleBookmark={() =>
+                  toggleBookmark(
+                    isBookmarked
+                      ? {
+                          isBookmarked,
+                          bookmarkId: bookmark!.id,
+                          flightId: flight.id,
+                        }
+                      : {
+                          isBookmarked,
+                          flight,
+                        }
+                  )
+                }
+              />
+            );
+          })}
         </div>
       )}
     </VirtualList>
