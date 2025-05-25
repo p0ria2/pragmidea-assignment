@@ -55,7 +55,7 @@ export default function FlightsFilters() {
         <SelectTrigger className="w-[180px]" data-testid="flights-filters">
           <SelectValue placeholder="Sort" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent data-testid="flights-filters-popup">
           {SORT_OPTIONS.map((option) => (
             <SelectItem
               key={`${option.by}-${option.order}`}
