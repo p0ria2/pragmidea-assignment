@@ -7,6 +7,7 @@ import { Flight } from '@/_types';
 import { useEffect } from 'react';
 import { sendRequest } from '@/_lib/http-utils';
 import { toast } from 'sonner';
+import { startOfDay } from 'date-fns';
 
 export default function useFlights() {
   const { search, isSearchValid, setIsSubmitting } = useFlightsSearch();
@@ -15,7 +16,14 @@ export default function useFlights() {
     queryKey: ['flights', search],
     queryFn: async () => {
       try {
-        return sendRequest<Flight[]>(`/api/flights?${toSearchParams(search)}`);
+        const response = await sendRequest<Flight[]>(
+          `/api/flights?${toSearchParams(search)}`
+        );
+
+        return response.filter(
+          (flight) =>
+            startOfDay(flight.departure.at) === startOfDay(search.departureDate)
+        );
       } catch (error) {
         toast.error('Failed to fetch flights');
         throw error;

@@ -9,19 +9,19 @@ import {
   FormMessage,
   LoadingButton,
 } from '@/_components';
+import { cn } from '@/_lib/css-utils';
+import { toSearchParams } from '@/_lib/url-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isAfter, isSameDay, isToday, parseISO } from 'date-fns';
+import { ArrowLeftRightIcon, BookmarkIcon } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { useFlightsSearchBookmark } from '../_providers/FlightsSearchBookmarkProvider';
 import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
 import AirportSearch from './AirportSearch';
 import FlightDateSearch from './FlightDateSearch';
 import PassengerSearch from './PassengerSearch';
-import { BookmarkIcon } from 'lucide-react';
-import { useFlightsSearchBookmark } from '../_providers/FlightsSearchBookmarkProvider';
-import { cn } from '@/_lib/css-utils';
-import { toSearchParams } from '@/_lib/url-utils';
 
 export const flightsSearchSchemaBase = z.object({
   originLocationCode: z.string().length(3, { message: 'From is required' }),
@@ -108,8 +108,14 @@ export default function FlightsSearch() {
     onSearchChange(values);
   };
 
-  const onToggleBookmark = () => {
+  const handleToggleBookmark = () => {
     toggleBookmark(form.getValues(), isBookmarked);
+  };
+
+  const handleSwapAirports = () => {
+    const { originLocationCode, destinationLocationCode } = form.getValues();
+    form.setValue('originLocationCode', destinationLocationCode);
+    form.setValue('destinationLocationCode', originLocationCode);
   };
 
   useEffect(() => {
@@ -121,7 +127,7 @@ export default function FlightsSearch() {
       <div className="rounded border p-4 shadow">
         <Form {...form}>
           <form
-            className="grid grid-cols-1 gap-4 md:grid-cols-2"
+            className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="flex items-center justify-between gap-2 md:col-span-2">
@@ -142,7 +148,7 @@ export default function FlightsSearch() {
                   isFlightsSearchBookmarkMapLoading ||
                   isFlightsSearchBookmarkPending
                 }
-                onClick={onToggleBookmark}
+                onClick={handleToggleBookmark}
               >
                 <BookmarkIcon
                   className={cn({
@@ -156,7 +162,7 @@ export default function FlightsSearch() {
               control={form.control}
               name="originLocationCode"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="relative">
                   <FormControl>
                     <AirportSearch
                       label="From"
@@ -166,6 +172,16 @@ export default function FlightsSearch() {
                     />
                   </FormControl>
                   <FormMessage />
+
+                  <Button
+                    className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.6] rotate-90 cursor-pointer rounded-full md:top-1/2 md:-right-[34px] md:left-auto md:translate-x-0 md:-translate-y-1/2 md:rotate-0"
+                    variant="outline"
+                    size="icon"
+                    type="button"
+                    onClick={handleSwapAirports}
+                  >
+                    <ArrowLeftRightIcon className="text-primary" />
+                  </Button>
                 </FormItem>
               )}
             />
