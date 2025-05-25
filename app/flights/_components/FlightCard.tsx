@@ -25,7 +25,10 @@ const FlightCard = memo(
             <span className="text-xs opacity-70">
               {format(departureDate, 'EEE, dd MMM')}
             </span>
-            <span className="font-medium">
+            <span
+              className="font-medium"
+              data-testid="flight-card-departure-time"
+            >
               {format(departureDate, 'HH:mm')}
             </span>
             <span>{flight.departure.iata}</span>
@@ -38,12 +41,18 @@ const FlightCard = memo(
                 {flight.airline}
               </span>
 
-              <span className="rounded-2xl bg-slate-200 px-2 py-1 text-xs font-semibold text-slate-800">
+              <span
+                className="rounded-2xl bg-slate-200 px-2 py-1 text-xs font-semibold text-slate-800"
+                data-testid="flight-card-duration"
+              >
                 {flight.duration}
               </span>
 
               {flight.stops.length ? (
-                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs opacity-70">
+                <span
+                  className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs opacity-70"
+                  data-testid="flight-card-stops"
+                >
                   {flight.stops.length} stop{flight.stops.length > 1 ? 's' : ''}{' '}
                   at {flight.stops.join(', ')}
                 </span>
@@ -61,7 +70,10 @@ const FlightCard = memo(
         </div>
 
         <div className="flex flex-col px-4 md:flex-[0_0_160px]">
-          <span className="flex-1 text-lg font-semibold">
+          <span
+            className="flex-1 text-lg font-semibold"
+            data-testid="flight-card-price"
+          >
             {flight.currency} {flight.price}
           </span>
           <Button variant="secondary">Select</Button>

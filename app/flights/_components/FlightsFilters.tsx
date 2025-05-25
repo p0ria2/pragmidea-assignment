@@ -11,8 +11,14 @@ import { FlightsSortBy, type FlightsFilters } from '@/_types';
 import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
 import useFlights from '../_hooks/use-flights';
 
-const SORT_OPTIONS: {
-  label: string;
+export const SORT_OPTIONS: {
+  label:
+    | 'Lowest Price'
+    | 'Highest Price'
+    | 'Shortest Duration'
+    | 'Earliest Departure'
+    | 'Latest Departure'
+    | 'Least Stops';
   by: FlightsSortBy;
   order: FlightsFilters['sort']['order'];
 }[] = [
@@ -46,7 +52,7 @@ export default function FlightsFilters() {
         value={`${filters.sort.by}-${filters.sort.order}`}
         onValueChange={handleSortChange}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[180px]" data-testid="flights-filters">
           <SelectValue placeholder="Sort" />
         </SelectTrigger>
         <SelectContent>
