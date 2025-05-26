@@ -10,13 +10,19 @@ import {
 } from '@/_components';
 import { cn } from '@/_lib/css-utils';
 import { Airport } from '@/_types';
-import { CheckIcon, ChevronDownIcon, SearchIcon } from 'lucide-react';
+import {
+  CheckIcon,
+  PlaneLandingIcon,
+  PlaneTakeoffIcon,
+  SearchIcon,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchAirport } from '../_hooks/use-search-airport';
 
 interface Props {
   label: string;
   value: string;
+  type: 'takeoff' | 'landing';
   onChange: (value: string) => void;
   error?: boolean;
 }
@@ -26,6 +32,7 @@ export default function AirportSearch({
   value,
   onChange,
   error,
+  type,
 }: Props) {
   const {
     keyword,
@@ -44,6 +51,7 @@ export default function AirportSearch({
   );
   const inputRef = useRef<HTMLInputElement>(null);
   const virtualizedListRef = useRef<VirtualListRef>(null);
+  const Icon = type === 'takeoff' ? PlaneTakeoffIcon : PlaneLandingIcon;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.currentTarget.value);
@@ -87,7 +95,7 @@ export default function AirportSearch({
                 : 'Select Airport'}
             </span>
           </div>
-          <ChevronDownIcon className="text-muted-foreground size-4" />
+          <Icon className="text-muted-foreground size-4" />
         </Button>
       </PopoverTrigger>
 

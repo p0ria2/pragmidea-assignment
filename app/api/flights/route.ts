@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     originLocationCode,
     destinationLocationCode,
     departureDate,
+    returnDate: searchParams.get("returnDate") || undefined,
     adults,
     children: searchParams.get("children") || "0",
     infants: searchParams.get("infants") || "0",

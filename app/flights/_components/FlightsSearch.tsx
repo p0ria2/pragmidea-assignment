@@ -170,6 +170,7 @@ export default function FlightsSearch() {
                       value={field.value}
                       onChange={field.onChange}
                       error={!!form.formState.errors.originLocationCode}
+                      type="takeoff"
                     />
                   </FormControl>
                   <FormMessage />
@@ -198,6 +199,7 @@ export default function FlightsSearch() {
                       value={field.value}
                       onChange={field.onChange}
                       error={!!form.formState.errors.destinationLocationCode}
+                      type="landing"
                     />
                   </FormControl>
                   <FormMessage />
