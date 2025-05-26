@@ -3,6 +3,7 @@ import FlightsSearchBookmarkProvider from './_providers/FlightsSearchBookmarkPro
 import FlightsFiltersProvider from './_providers/FlightsFiltersProvider';
 import FlightsSearchProvider from './_providers/FlightsSearchProvider';
 import SearchedFlightsBookmarkProvider from './_providers/SearchedFlightsBookmarkProvider';
+import FlightsProvider from './_providers/FlightsProvider';
 
 export default function FlightsLayout({
   children,
@@ -13,11 +14,13 @@ export default function FlightsLayout({
     <AirportsProvider>
       <FlightsSearchProvider>
         <FlightsFiltersProvider>
-          <FlightsSearchBookmarkProvider>
-            <SearchedFlightsBookmarkProvider>
-              {children}
-            </SearchedFlightsBookmarkProvider>
-          </FlightsSearchBookmarkProvider>
+          <FlightsProvider>
+            <FlightsSearchBookmarkProvider>
+              <SearchedFlightsBookmarkProvider>
+                {children}
+              </SearchedFlightsBookmarkProvider>
+            </FlightsSearchBookmarkProvider>
+          </FlightsProvider>
         </FlightsFiltersProvider>
       </FlightsSearchProvider>
     </AirportsProvider>

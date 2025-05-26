@@ -10,7 +10,6 @@ import {
 } from '@/_components';
 import { initials } from '@/_lib/string-utils';
 import { useAuth } from '@/auth/_providers/AuthProvider';
-import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

@@ -5,14 +5,31 @@ import { toSearchParams } from '@/_lib/url-utils';
 import { Flight } from '@/_types';
 import { useQuery } from '@tanstack/react-query';
 import { format, isAfter, parseISO, startOfDay } from 'date-fns';
-import { useEffect } from 'react';
+import { createContext, use, useEffect } from 'react';
 import { toast } from 'sonner';
-import { useFlightsSearch } from '../_providers/FlightsSearchProvider';
+import { useFlightsSearch } from './FlightsSearchProvider';
 
-export default function useFlights() {
+interface FlightsProviderContextType {
+  flights: Flight[];
+  isLoading: boolean;
+  isFetched: boolean;
+}
+
+export const FlightsProviderContext =
+  createContext<FlightsProviderContextType | null>(null);
+
+export default function FlightsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { search, isSearchValid, setIsSubmitting } = useFlightsSearch();
 
-  const { isLoading, ...rest } = useQuery<Flight[]>({
+  const {
+    isLoading,
+    data: flights,
+    isFetched,
+  } = useQuery<Flight[]>({
     queryKey: ['flights', search],
     queryFn: async () => {
       try {
@@ -38,6 +55,21 @@ export default function useFlights() {
     setIsSubmitting(isLoading);
   }, [isLoading]);
 
-  return { isLoading, ...rest };
+  return (
+    <FlightsProviderContext
+      value={{ flights: flights ?? [], isLoading, isFetched }}
+    >
+      {children}
+    </FlightsProviderContext>
+  );
 }
+
+export const useFlights = () => {
+  const context = use(FlightsProviderContext);
+  if (!context) {
+    throw new Error('useFlights must be used within a FlightsProvider');
+  }
+
+  return context;
+};
 

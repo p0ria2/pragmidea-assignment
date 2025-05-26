@@ -1,3 +1,4 @@
+import { getMonthName } from "@/_lib/date-utils";
 import test, { expect } from "@playwright/test";
 import { format, getDate } from "date-fns";
 
@@ -115,14 +116,14 @@ test.describe('Flights Search', () => {
     test("should be able to select departure date", async ({ page }) => {
         const today = new Date();
         await page.getByRole('button', { name: 'Departure' }).click();
-        await page.getByText(`${getDate(today)}`, { exact: true }).click();
+        await page.locator(`abbr[aria-label*="${getMonthName(today, 'long')} ${getDate(today)}"]`).click();
         await expect(page.getByRole('button', { name: format(today, 'EEE, dd MMM') })).toBeVisible();
     });
 
     test("should be able to select return date", async ({ page }) => {
         const today = new Date();
         await page.getByRole('button', { name: 'Return' }).click();
-        await page.getByText(`${getDate(today)}`, { exact: true }).click();
+        await page.locator(`abbr[aria-label*="${getMonthName(today, 'long')} ${getDate(today)}"]`).click();
         await expect(page.getByRole('button', { name: format(today, 'EEE, dd MMM') })).toBeVisible();
     });
 
@@ -130,11 +131,13 @@ test.describe('Flights Search', () => {
         const today = new Date();
         await page.getByRole('button', { name: 'Return' }).click();
         await expect(page.getByTestId('flight-date-search-popover')).toBeVisible();
-        await page.getByText(`${getDate(today)}`, { exact: true }).click();
+        await page.locator(`abbr[aria-label*="${getMonthName(today, 'long')} ${getDate(today)}"]`).click();
         await expect(page.getByTestId('flight-date-search-popover')).toBeHidden();
         await page.getByRole('button', { name: 'Departure' }).click();
         await expect(page.getByTestId('flight-date-search-popover')).toBeVisible();
-        await page.getByText(`${getDate(today.setDate(today.getDate() + 1))}`, { exact: true }).click();
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        await page.locator(`abbr[aria-label*="${getMonthName(tomorrow, 'long')} ${getDate(tomorrow)}"]`).click();
         await expect(page.getByTestId('flight-date-search-popover')).toBeHidden();
         await page.getByRole('button', { name: 'Search' }).click();
         await expect(page.getByText('Return date must be after departure date')).toBeVisible();
@@ -154,7 +157,7 @@ test.describe('Flights Search', () => {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         await page.getByRole('button', { name: 'Departure' }).click();
-        await page.getByText(`${getDate(tomorrow)}`, { exact: true }).click();
+        await page.locator(`abbr[aria-label*="${getMonthName(tomorrow, 'long')} ${getDate(tomorrow)}"]`).click();
         await expect(page.getByTestId('flight-date-search-popover')).toBeHidden();
 
         await page.getByRole('button', { name: 'Search' }).click();

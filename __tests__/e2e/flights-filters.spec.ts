@@ -1,3 +1,4 @@
+import { getMonthName } from "@/_lib/date-utils";
 import { SORT_OPTIONS } from "@/flights/_components/FlightsFilters";
 import test, { expect, Page } from "@playwright/test";
 import { getDate } from "date-fns";
@@ -85,7 +86,7 @@ test.describe('Flights Filters', () => {
         await expect(page.getByTestId('airport-search-popover')).toBeHidden();
 
         await page.getByRole('button', { name: 'Departure' }).click();
-        await page.getByText(`${getDate(tomorrow)}`, { exact: true }).click();
+        await page.locator(`abbr[aria-label*="${getMonthName(tomorrow, 'long')} ${getDate(tomorrow)}"]`).click();
         await expect(page.getByTestId('flight-date-search-popover')).toBeHidden();
 
         await page.getByRole('button', { name: 'Search' }).click();

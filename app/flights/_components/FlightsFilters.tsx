@@ -9,7 +9,7 @@ import {
 } from '@/_components';
 import { FlightsSortBy, type FlightsFilters } from '@/_types';
 import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
-import useFlights from '../_hooks/use-flights';
+import { useFlights } from '../_providers/FlightsProvider';
 
 export const SORT_OPTIONS: {
   label:
@@ -33,7 +33,7 @@ export const SORT_OPTIONS: {
 export default function FlightsFilters() {
   const { filters, handleFiltersChange } = useFlightsFilters();
   const {
-    data: allFlights,
+    flights,
     isLoading: isFlightsLoading,
     isFetched: isFlightsFetched,
   } = useFlights();
@@ -70,7 +70,7 @@ export default function FlightsFilters() {
       <span className="opacity-70">
         {!isFlightsFetched || isFlightsLoading
           ? null
-          : `${allFlights?.length || 0} results found`}
+          : `${flights?.length || 0} results found`}
       </span>
     </div>
   );

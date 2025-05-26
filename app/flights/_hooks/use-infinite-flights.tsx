@@ -1,17 +1,17 @@
 'use client';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
-import useFlights from './use-flights';
-import { Flight } from '@/_types';
-import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
 import { filterFlights } from '@/_lib/flights-utils';
+import { Flight } from '@/_types';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useFlightsFilters } from '../_providers/FlightsFiltersProvider';
+import { useFlights } from '../_providers/FlightsProvider';
 
 export interface Props {
   limit: number;
 }
 
 export default function useInfiniteFlights({ limit }: Props) {
-  const { data: allFlights, isLoading: isFlightsLoading } = useFlights();
+  const { flights: allFlights, isLoading: isFlightsLoading } = useFlights();
   const { filters } = useFlightsFilters();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
