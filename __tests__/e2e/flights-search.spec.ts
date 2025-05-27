@@ -14,57 +14,69 @@ test.describe('Flights Search', () => {
                 [
                     {
                         id: "1",
-                        duration: "16:50",
-                        airline: "OMAN AIR",
-                        departure: {
-                            at: `${tomorrowDate}T22:45:00`,
-                            iata: "IKA"
-                        },
-                        arrival: {
-                            at: "2025-05-26T20:05:00",
-                            iata: "KUL"
-                        },
-                        stops: [
-                            "DOH",
+                        itineraries: [
+                            {
+                                duration: "16:50",
+                                airlines: ["OMAN AIR"],
+                                departure: {
+                                    at: `${tomorrowDate}T22:45:00`,
+                                    iata: "IKA"
+                                },
+                                arrival: {
+                                    at: "2025-05-26T20:05:00",
+                                    iata: "KUL"
+                                },
+                                stops: [
+                                    "DOH",
+                                ],
+                            },
                         ],
                         price: "530.22",
                         currency: "EUR"
                     },
                     {
                         id: "2",
-                        duration: "00:50",
-                        airline: "OMAN AIR",
-                        departure: {
-                            at: `${tomorrowDate}T20:45:00`,
-                            iata: "IKA"
-                        },
-                        arrival: {
-                            at: "2025-05-27T20:05:00",
-                            iata: "KUL"
-                        },
-                        stops: [
-                            "DOH",
-                            "MCT"
+                        itineraries: [
+                            {
+                                duration: "00:50",
+                                airlines: ["OMAN AIR"],
+                                departure: {
+                                    at: `${tomorrowDate}T20:45:00`,
+                                    iata: "IKA"
+                                },
+                                arrival: {
+                                    at: "2025-05-27T20:05:00",
+                                    iata: "KUL"
+                                },
+                                stops: [
+                                    "DOH",
+                                    "MCT"
+                                ],
+                            },
                         ],
                         price: "430.22",
                         currency: "EUR"
                     },
                     {
-                        "id": "3",
-                        "duration": "40:50",
-                        "airline": "OMAN AIR",
-                        departure: {
-                            at: `${tomorrowDate}T23:45:00`,
-                            iata: "IKA"
-                        },
-                        arrival: {
-                            at: "2025-05-27T20:05:00",
-                            iata: "KUL"
-                        },
-                        stops: [
-                            "DOH",
-                            "MCT",
-                            "ABU"
+                        id: "3",
+                        itineraries: [
+                            {
+                                duration: "40:50",
+                                airlines: ["OMAN AIR"],
+                                departure: {
+                                    at: `${tomorrowDate}T23:45:00`,
+                                    iata: "IKA"
+                                },
+                                arrival: {
+                                    at: "2025-05-27T20:05:00",
+                                    iata: "KUL"
+                                },
+                                stops: [
+                                    "DOH",
+                                    "MCT",
+                                    "ABU"
+                                ],
+                            },
                         ],
                         price: "532.56",
                         currency: "EUR"

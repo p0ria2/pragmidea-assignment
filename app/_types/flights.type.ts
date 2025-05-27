@@ -16,8 +16,14 @@ export interface Airport {
 
 export interface Flight {
     id: string;
+    itineraries: FlightItinerary[];
+    price: string;
+    currency: string;
+}
+
+export interface FlightItinerary {
     duration: string;
-    airline: string;
+    airlines: string[];
     departure: {
         at: string;
         iata: string;
@@ -27,8 +33,6 @@ export interface Flight {
         iata: string;
     };
     stops: string[]
-    price: string;
-    currency: string;
 }
 
 export type FlightsSearch = z.infer<typeof flightsSearchSchema>;

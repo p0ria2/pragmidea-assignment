@@ -1,3 +1,4 @@
+import { getMonthName } from "@/_lib/date-utils";
 import test, { expect } from "@playwright/test";
 import { getDate } from "date-fns";
 
@@ -55,7 +56,7 @@ test.describe('Bookmark Flight', () => {
 
         const today = new Date();
         await page.getByRole('button', { name: 'Departure' }).click();
-        await page.getByText(`${getDate(today)}`, { exact: true }).click();
+        await page.locator(`abbr[aria-label*="${getMonthName(today, 'long')} ${getDate(today)}"]`).click();
         await expect(page.getByTestId('flight-date-search-popover')).toBeHidden();
 
         await expect(page.getByTestId('flights-search-bookmark-button')).toBeEnabled();

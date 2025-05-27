@@ -43,7 +43,7 @@ export class AmadeusApiProvider extends FlightApiProvider {
 
             const data = await response.json();
             return (data?.data || []).map((flight: any) =>
-                this.convertToFlight(flight, data.dictionaries, opts.returnDate)
+                this.convertToFlight(flight, data.dictionaries)
             );
         } catch (error) {
             console.error("Error searching flights:", error);
@@ -95,34 +95,30 @@ export class AmadeusApiProvider extends FlightApiProvider {
         return this.credentials && this.credentials.expiresIn > Date.now();
     }
 
-    private convertToFlight(data: any, dictionaries: any, returnDate?: string): Flight {
-        const itinerary = data.itineraries[0];
-        const firstSegment = itinerary.segments[0];
-        const lastSegment = itinerary.segments[itinerary.segments.length - 1];
-        const duration = this.getFlightDuration(itinerary.duration);
-        const airline = dictionaries.carriers[firstSegment.carrierCode];
-        const departure = firstSegment.departure;
-        const arrival = {
-            at: returnDate ? `${returnDate}T${lastSegment.arrival.at.split("T")[1]}` : lastSegment.arrival.at,
-            iataCode: lastSegment.arrival.iataCode,
-        };
+    private convertToFlight(data: any, dictionaries: any): Flight {
         const price = data.price.grandTotal;
         const currency = data.price.currency;
-        const stops = itinerary.segments.slice(1).map((segment: any) => segment.departure.iataCode);
 
         return {
             id: data.id,
-            duration,
-            airline,
-            departure: {
-                at: departure.at,
-                iata: departure.iataCode,
-            },
-            arrival: {
-                at: arrival.at,
-                iata: arrival.iataCode,
-            },
-            stops,
+            itineraries: data.itineraries.map((itinerary: any) => {
+                const firstSegment = itinerary.segments[0];
+                const lastSegment = itinerary.segments[itinerary.segments.length - 1];
+
+                return {
+                    duration: this.getFlightDuration(itinerary.duration),
+                    airlines: itinerary.segments.map((segment: any) => dictionaries.carriers[segment.carrierCode]),
+                    departure: {
+                        at: firstSegment.departure.at,
+                        iata: firstSegment.departure.iataCode,
+                    },
+                    arrival: {
+                        at: lastSegment.arrival.at,
+                        iata: lastSegment.arrival.iataCode,
+                    },
+                    stops: itinerary.segments.slice(1).map((segment: any) => segment.departure.iataCode),
+                }
+            }),
             price,
             currency,
         };

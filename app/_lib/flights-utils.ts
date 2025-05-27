@@ -47,13 +47,13 @@ export function filterFlights(flights: Flight[], filters: FlightsFilters, from =
     const sortedFlights = flights.sort((a, b) => {
         switch (filters.sort.by) {
             case FlightsSortBy.Duration:
-                return filters.sort.order === 'asc' ? a.duration.localeCompare(b.duration) : b.duration.localeCompare(a.duration);
+                return filters.sort.order === 'asc' ? a.itineraries[0].duration.localeCompare(b.itineraries[0].duration) : b.itineraries[0].duration.localeCompare(a.itineraries[0].duration);
 
             case FlightsSortBy.Departure:
-                return filters.sort.order === 'asc' ? a.departure.at.localeCompare(b.departure.at) : b.departure.at.localeCompare(a.departure.at);
+                return filters.sort.order === 'asc' ? a.itineraries[0].departure.at.localeCompare(b.itineraries[0].departure.at) : b.itineraries[0].departure.at.localeCompare(a.itineraries[0].departure.at);
 
             case FlightsSortBy.Stops:
-                return filters.sort.order === 'asc' ? a.stops.length - b.stops.length : b.stops.length - a.stops.length;
+                return filters.sort.order === 'asc' ? a.itineraries[0].stops.length - b.itineraries[0].stops.length : b.itineraries[0].stops.length - a.itineraries[0].stops.length;
 
             default:
                 return filters.sort.order === 'asc' ? Number(a.price) - Number(b.price) : Number(b.price) - Number(a.price);

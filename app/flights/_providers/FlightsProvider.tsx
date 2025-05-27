@@ -33,16 +33,7 @@ export default function FlightsProvider({
     queryKey: ['flights', search],
     queryFn: async () => {
       try {
-        const response = await sendRequest<Flight[]>(
-          `/api/flights?${toSearchParams(search)}`
-        );
-
-        return response.filter(
-          (flight) =>
-            format(startOfDay(parseISO(flight.departure.at)), 'yyyy-MM-dd') ==
-              search.departureDate &&
-            isAfter(parseISO(flight.departure.at), new Date())
-        );
+        return sendRequest<Flight[]>(`/api/flights?${toSearchParams(search)}`);
       } catch (error) {
         toast.error('Failed to fetch flights');
         throw error;
